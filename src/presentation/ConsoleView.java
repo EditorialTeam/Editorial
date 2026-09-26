@@ -349,11 +349,11 @@ public class ConsoleView implements View {
     public void showStats() {
         EditorialStatistics statistics = presenter.onGetStatistics();
 
-        System.out.println("User count: " + statistics.userCount());
-        System.out.println("Article count: " + statistics.articleCount());
-        System.out.println("Articles awaiting moderation: " + statistics.pendingArticleCount());
-        System.out.println("Articles published: " + statistics.publishedArticleCount());
-        System.out.println("Articles rejected: " + statistics.rejectedArticleCount());
+        System.out.println("User count: " + statistics.getUserCount());
+        System.out.println("Article count: " + statistics.getArticleCount());
+        System.out.println("Articles awaiting moderation: " + statistics.getPendingArticleCount());
+        System.out.println("Articles published: " + statistics.getPublishedArticleCount());
+        System.out.println("Articles rejected: " + statistics.getRejectedArticleCount());
     }
 
     private void exportArticles(){
