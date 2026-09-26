@@ -76,6 +76,21 @@ public class JdbcArticleRepositoryTest extends JdbcTestBase {
     }
 
     @Test
+    void editArticlePersistsStatusChangeOnly() {
+        User author = persistAuthor();
+        Article article = new Article(0, author.getId(), "Draft title", "Draft content", Article.Status.PENDING, null);
+        articleRepository.addArticle(article);
+
+        article.setStatus(Article.Status.REJECTED);
+        articleRepository.editArticle(article);
+
+        Article stored = articleRepository.getArticleById(article.getId());
+        assertEquals(Article.Status.REJECTED, stored.getStatus());
+        assertEquals("Draft title", stored.getTitle());
+        assertEquals("Draft content", stored.getContent());
+    }
+
+    @Test
     void editArticleThrowsWhenArticleDoesNotExist() {
         Article missing = new Article(99, 1, "Title", "Content", Article.Status.PENDING, null);
 
