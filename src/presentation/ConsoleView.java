@@ -1,10 +1,10 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.EditorialStatistics;
 import domain.model.User;
 import presentation.validation.InputValidationService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -30,8 +30,6 @@ public class ConsoleView implements View {
     private static final int EXPORT_ARTICLES_TO_EXCEL = 15;
     private static final int EXIT_COMMAND = 0;
 
-    // Внутренне хранилище статей?
-    private List<Article> articles = new ArrayList<>();
 
     // "Мозги" системы, сканер и сервис валидатора
     private Presenter presenter;
@@ -349,29 +347,13 @@ public class ConsoleView implements View {
 
     @Override
     public void showStats() {
-        int userCount = presenter.onGetUsers().toArray().length;
-        int articleCount = 0;
-        int pendingCount = 0;
-        int publishedCount = 0;
-        int rejectedCount = 0;
+        EditorialStatistics statistics = presenter.onGetStatistics();
 
-        List<Article> articleList = presenter.onGetArticles();
-
-        articleCount = articleList.toArray().length;
-
-        for (int i = 0; i < articleCount; i++) {
-            String statusName = articleList.get(i).getStatus().name();
-
-            if (statusName.equals("PENDING")) pendingCount++;
-            if (statusName.equals("PUBLISHED")) publishedCount++;
-            if (statusName.equals("REJECTED")) rejectedCount++;
-        }
-
-        System.out.println("User count: " + userCount);
-        System.out.println("Article count: " + articleCount);
-        System.out.println("Articles awaiting moderation: " + pendingCount);
-        System.out.println("Articles publised: " + publishedCount);
-        System.out.println("Articles rejected: " + rejectedCount);
+        System.out.println("User count: " + statistics.userCount());
+        System.out.println("Article count: " + statistics.articleCount());
+        System.out.println("Articles awaiting moderation: " + statistics.pendingArticleCount());
+        System.out.println("Articles published: " + statistics.publishedArticleCount());
+        System.out.println("Articles rejected: " + statistics.rejectedArticleCount());
     }
 
     private void exportArticles(){

@@ -1,7 +1,6 @@
 package presentation;
 
-import domain.model.Article;
-import domain.model.User;
+import domain.model.EditorialStatistics;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -39,16 +36,9 @@ class ConsoleViewTest {
 
     @Test
     void showStatsPrintsUserAndArticleCountsGroupedByStatus() {
-        when(presenter.onGetUsers()).thenReturn(List.of(
-                user(1),
-                user(2)
-        ));
-        when(presenter.onGetArticles()).thenReturn(List.of(
-                article(1, Article.Status.PENDING),
-                article(2, Article.Status.MODERATING),
-                article(3, Article.Status.PUBLISHED),
-                article(4, Article.Status.REJECTED)
-        ));
+        when(presenter.onGetStatistics()).thenReturn(
+                new EditorialStatistics(2, 4, 1, 1, 1)
+        );
 
         view.showStats();
 
@@ -57,18 +47,9 @@ class ConsoleViewTest {
                 () -> assertTrue(result.contains("User count: 2")),
                 () -> assertTrue(result.contains("Article count: 4")),
                 () -> assertTrue(result.contains("Articles awaiting moderation: 1")),
-                () -> assertTrue(result.contains("Articles publised: 1")),
+                () -> assertTrue(result.contains("Articles published: 1")),
                 () -> assertTrue(result.contains("Articles rejected: 1"))
         );
-        verify(presenter).onGetUsers();
-        verify(presenter).onGetArticles();
-    }
-
-    private static User user(int id) {
-        return new User(id, "user" + id, "user" + id + "@example.com", "hash", User.Role.AUTHOR);
-    }
-
-    private static Article article(int id, Article.Status status) {
-        return new Article(id, 1, "Title", "Content", status, null);
+        verify(presenter).onGetStatistics();
     }
 }
