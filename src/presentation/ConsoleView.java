@@ -12,24 +12,6 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 public class ConsoleView implements View {
-    // Константы - номера комманд
-    private static final int SHOW_ARTICLES_COMMAND = 1;
-    private static final int ADD_ARTICLE_COMMAND = 2;
-    private static final int EDIT_ARTICLE_COMMAND = 3;
-    private static final int DELETE_ARTICLE_COMMAND = 4;
-    private static final int GET_ARTICLE_BY_ID_COMMAND = 5;
-    private static final int FILTER_ARTICLES_COMMAND = 6;
-    private static final int SORT_ARTICLES_COMMAND = 7;
-    private static final int SEARCH_ARTICLES_COMMAND = 8;
-    private static final int ADD_USER_COMMAND = 9;
-    private static final int EDIT_USER_COMMAND = 10;
-    private static final int DELETE_USER_COMMAND = 11;
-    private static final int GET_USER_BY_ID_COMMAND = 12;
-    private static final int SHOW_USERS_COMMAND = 13;
-    private static final int SHOW_STATS = 14;
-    private static final int EXPORT_ARTICLES_TO_EXCEL = 15;
-    private static final int EXIT_COMMAND = 0;
-
 
     // "Мозги" системы, сканер и сервис валидатора
     private Presenter presenter;
