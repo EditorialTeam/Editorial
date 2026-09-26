@@ -1,6 +1,6 @@
 package domain.model;
 
-public final class EditorialStatistics {
+public class EditorialStatistics {
     private final int userCount;
     private final int articleCount;
     private final int pendingArticleCount;
