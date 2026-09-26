@@ -1,148 +1,99 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.EditorialStatistics;
 import domain.model.User;
-import domain.usecase.*;
+import domain.service.ArticleService;
+import domain.service.StatisticsService;
+import domain.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-// Класс Presenter ("мозги" UI): связывает View и UseCase-ы бизнес-логики
 public class Presenter {
-    // Ссылка на интерфейс отображения (View)
     private final View view;
+    private final ArticleService articleService;
+    private final UserService userService;
+    private final StatisticsService statisticsService;
 
-    // UseCase-ы для работы со статьями
-    private final GetArticlesUseCase getArticlesUseCase;
-    private final AddArticleUseCase addArticleUseCase;
-    private final GetArticleByIdUseCase getArticleByIdUseCase;
-    private final DeleteArticleUseCase deleteArticleUseCase;
-    private final FilterArticlesUseCase filterArticlesUseCase;
-    private final EditArticleUseCase editArticleUseCase;
-    private final SortArticlesUseCase sortArticlesUseCase;
-    private final SearchArticleUseCase searchArticleUseCase;
-    private final ExportArticlesToExcelUseCase exportArticlesToExcelUseCase;
-
-    // UseCase-ы для работы с пользователями
-    private final AddUserUseCase addUserUseCase;
-    private final EditUserUseCase editUserUseCase;
-    private final DeleteUserUseCase deleteUserUseCase;
-    private final GetUserByIdUseCase getUserByIdUseCase;
-    private final GetUsersUseCase getUsersUseCase;
-
-    // Конструктор класса: принимает View и все UseCase-ы
     public Presenter(
             View view,
-            GetArticlesUseCase getArticlesUseCase,
-            AddArticleUseCase addArticleUseCase,
-            EditArticleUseCase editArticleUseCase,
-            GetArticleByIdUseCase getArticleByIdUseCase,
-            DeleteArticleUseCase deleteArticleUseCase,
-            FilterArticlesUseCase filterArticlesUseCase,
-            SortArticlesUseCase sortArticlesUseCase,
-            SearchArticleUseCase searchArticleUseCase,
-            AddUserUseCase addUserUseCase,
-            EditUserUseCase editUserUseCase,
-            DeleteUserUseCase deleteUserUseCase,
-            GetUserByIdUseCase getUserByIdUseCase,
-            GetUsersUseCase getUsersUseCase,
-            ExportArticlesToExcelUseCase exportArticlesToExcelUseCase
-
+            ArticleService articleService,
+            UserService userService,
+            StatisticsService statisticsService
     ) {
         this.view = view;
-        this.getArticlesUseCase = getArticlesUseCase;
-        this.addArticleUseCase = addArticleUseCase;
-        this.deleteArticleUseCase = deleteArticleUseCase;
-        this.getArticleByIdUseCase = getArticleByIdUseCase;
-        this.filterArticlesUseCase = filterArticlesUseCase;
-        this.sortArticlesUseCase = sortArticlesUseCase;
-        this.searchArticleUseCase = searchArticleUseCase;
-        this.editArticleUseCase = editArticleUseCase;
-        this.addUserUseCase = addUserUseCase;
-        this.editUserUseCase = editUserUseCase;
-        this.deleteUserUseCase = deleteUserUseCase;
-        this.getUserByIdUseCase = getUserByIdUseCase;
-        this.getUsersUseCase = getUsersUseCase;
-        this.exportArticlesToExcelUseCase = exportArticlesToExcelUseCase;
+        this.articleService = articleService;
+        this.userService = userService;
+        this.statisticsService = statisticsService;
     }
 
-    // Обработка добавления статьи
     public boolean onAddArticle(Article article) {
         try {
-            addArticleUseCase.execute(article); // Вызываем юзкейс добавления
-            view.showMessage("Article added");  // Выводим сообщение об успехе
+            articleService.add(article);
+            view.showMessage("Article added");
             return true;
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());     // Если ошибка валидации или базы выводим ошибку
+            view.showError(e.getMessage());
             return false;
         }
     }
 
-    // Обработка получения всех статей
     public List<Article> onGetArticles() {
-        List<Article> returnArticles = new ArrayList<Article>();
         try {
-            returnArticles = getArticlesUseCase.execute();
+            return articleService.getAll();
         } catch (IllegalStateException e) {
             view.showError(e.getMessage());
+            return List.of();
         }
-        return returnArticles;
     }
 
-    // Обработка удаления статьи по id
     public void onDeleteArticle(int articleId) {
         try {
-            deleteArticleUseCase.execute(articleId); // Вызываем юзкейс удаления по id
-            view.showMessage("Article deleted");    // Выводим сообщение об успехе
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            view.showError(e.getMessage());         // Если не удалось удалить выводим ошибку
+            articleService.delete(articleId);
+            view.showMessage("Article deleted");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
         }
     }
 
-    // Обработка получения статьи по id
     public Article onGetArticleById(int articleId) {
-        Article returnArticle = null;
         try {
-            returnArticle = getArticleByIdUseCase.execute(articleId); // Получаем статью через юзкейс
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            view.showError(e.getMessage());                           // Если не нашли или ошибка выводим ошибку
+            return articleService.getById(articleId);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+            return null;
         }
-
-        return returnArticle; // Возвращаем статью
     }
 
-    // Обработка фильтрации статей
     public void onFilterArticles() {
+        // Filtering has not been implemented yet.
     }
 
-    // Обработка сортировки статей
     public void onSortArticles() {
+        // Sorting has not been implemented yet.
     }
 
-    // Обработка поиска статей
     public void onSearchArticle() {
+        // Searching has not been implemented yet.
     }
 
-    // Обработка редактирования статьи по id
     public void onEditArticle(int articleId, String title, String content, Article.Status status) {
         try {
-            editArticleUseCase.execute(articleId, title, content, status); // Вызываем юзкейс редактирования
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            view.showError(e.getMessage());                                // Если ошибка валидации или не найдено выводим ошибку
+            articleService.edit(articleId, title, content, status);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
         }
     }
 
-    // Обработка добавления пользователя
     public void onAddUser(User user) {
         try {
-            addUserUseCase.execute(user);     // Вызываем юзкейс добавления пользователя
-            view.showMessage("User added");   // Выводим сообщение об успехе
+            userService.add(user);
+            view.showMessage("User added");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());   // Если ошибка валидации или базы выводим ошибку
+            view.showError(e.getMessage());
         }
     }
 
-    // Обработка редактирования пользователя по id
     public void onEditUser(
             int userId,
             String username,
@@ -151,52 +102,55 @@ public class Presenter {
             User.Role role
     ) {
         try {
-            editUserUseCase.execute(userId, username, email, passwordHash, role); // Вызываем юзкейс редактирования пользователя
-            view.showMessage("User edited");                                      // Выводим сообщение об успехе
+            userService.edit(userId, username, email, passwordHash, role);
+            view.showMessage("User edited");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());                                       // Если ошибка валидации или не найден выводим ошибку
+            view.showError(e.getMessage());
         }
     }
 
-    // Обработка удаления пользователя по id
     public void onDeleteUser(int userId) {
         try {
-            deleteUserUseCase.execute(userId); // Вызываем юзкейс удаления пользователя
-            view.showMessage("User deleted");  // Выводим сообщение об успехе
+            userService.delete(userId);
+            view.showMessage("User deleted");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());    // Если не удалось удалить выводим ошибку
+            view.showError(e.getMessage());
         }
     }
 
-    // Обработка получения пользователя по id
     public User onGetUserById(int userId) {
-        User returnUser = null;
-
         try {
-            returnUser = getUserByIdUseCase.execute(userId); // Получаем пользователя через юзкейс
+            return userService.getById(userId);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());                  // Если не найден или ошибка выводим ошибку
+            view.showError(e.getMessage());
+            return null;
         }
-
-        return returnUser; // Возвращаем пользователя
     }
 
     public List<User> onGetUsers() {
         try {
-            return getUsersUseCase.execute();
+            return userService.getAll();
         } catch (IllegalStateException e) {
             view.showError(e.getMessage());
             return List.of();
         }
     }
 
-    public void onExportArticles(String filePath){
+    public EditorialStatistics onGetStatistics() {
         try {
-            exportArticlesToExcelUseCase.execute(filePath);
+            return statisticsService.getStatistics();
+        } catch (IllegalStateException e) {
+            view.showError(e.getMessage());
+            return EditorialStatistics.empty();
+        }
+    }
+
+    public void onExportArticles(String filePath) {
+        try {
+            articleService.exportToExcel(filePath);
             view.showMessage("Articles exported successfully to " + filePath);
         } catch (IllegalArgumentException | IllegalStateException e) {
             view.showError(e.getMessage());
         }
     }
-
 }
