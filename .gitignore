@@ -44,3 +44,13 @@ Desktop.ini
 
 # Logs
 *.log
+
+# Excel files
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+
+# Temporary Excel lock/swap files (временные файлы, которые Excel создает при открытии)
+~$*.xlsx
+~$*.xls

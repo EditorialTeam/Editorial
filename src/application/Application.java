@@ -3,11 +3,15 @@ package application;
 import data.local.database.DatabaseConfig;
 import data.local.database.DatabaseConnectionFactory;
 import data.local.database.DatabaseMigrator;
+import data.local.exporter.PoiArticleExcelExporter;
 import data.local.repository.JdbcArticleRepository;
 import data.local.repository.JdbcUserRepository;
+import domain.repository.ArticleExporter;
 import domain.repository.ArticleRepository;
 import domain.repository.UserRepository;
-import domain.usecase.*;
+import domain.service.ArticleService;
+import domain.service.StatisticsService;
+import domain.service.UserService;
 import domain.validator.ArticleValidator;
 import domain.validator.IdValidator;
 import domain.validator.UserValidator;
@@ -26,6 +30,8 @@ public class Application {
         ArticleRepository articleRepository = new JdbcArticleRepository(connectionFactory);
         UserRepository userRepository = new JdbcUserRepository(connectionFactory);
 
+        // Экспортер для экспорта Статей в Excel формат
+        ArticleExporter articleExporter = new PoiArticleExcelExporter();
         // Создание валидаторов
         ArticleValidator articleValidator = new ArticleValidator(userRepository);
         UserValidator userValidator = new UserValidator();
@@ -36,23 +42,23 @@ public class Application {
                 userValidator
         );
 
+        // Сервисы бизнес-логики
+        ArticleService articleService = new ArticleService(
+                articleRepository,
+                articleExporter,
+                articleValidator,
+                idValidator
+        );
+        UserService userService = new UserService(userRepository, userValidator, idValidator);
+        StatisticsService statisticsService = new StatisticsService(articleRepository, userRepository);
+
         // UI
         ConsoleView view = new ConsoleView(inputValidationService); // Ввод вывод текста в консоль
         Presenter presenter = new Presenter( // Обработка текста
                 view,
-                new GetArticlesUseCase(articleRepository),
-                new AddArticleUseCase(articleRepository, articleValidator),
-                new EditArticleUseCase(articleRepository, articleValidator, idValidator),
-                new GetArticleByIdUseCase(articleRepository, idValidator),
-                new DeleteArticleUseCase(articleRepository, idValidator),
-                new FilterArticlesUseCase(),
-                new SortArticlesUseCase(),
-                new SearchArticleUseCase(),
-                new AddUserUseCase(userRepository, userValidator),
-                new EditUserUseCase(userRepository, userValidator, idValidator),
-                new DeleteUserUseCase(userRepository, idValidator),
-                new GetUserByIdUseCase(userRepository, idValidator),
-                new GetUsersUseCase(userRepository)
+                articleService,
+                userService,
+                statisticsService
         );
         view.setPresenter(presenter);
 

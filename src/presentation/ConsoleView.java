@@ -1,10 +1,10 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.EditorialStatistics;
 import domain.model.User;
 import presentation.validation.InputValidationService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -12,23 +12,6 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 public class ConsoleView implements View {
-    // Константы - номера комманд
-    private static final int SHOW_ARTICLES_COMMAND = 1;
-    private static final int ADD_ARTICLE_COMMAND = 2;
-    private static final int EDIT_ARTICLE_COMMAND = 3;
-    private static final int DELETE_ARTICLE_COMMAND = 4;
-    private static final int GET_ARTICLE_BY_ID_COMMAND = 5;
-    private static final int FILTER_ARTICLES_COMMAND = 6;
-    private static final int SORT_ARTICLES_COMMAND = 7;
-    private static final int SEARCH_ARTICLES_COMMAND = 8;
-    private static final int ADD_USER_COMMAND = 9;
-    private static final int EDIT_USER_COMMAND = 10;
-    private static final int DELETE_USER_COMMAND = 11;
-    private static final int GET_USER_BY_ID_COMMAND = 12;
-    private static final int SHOW_USERS_COMMAND = 13;
-    private static final int SHOW_STATS = 14;
-    private static final int EXIT_COMMAND = 0;
-
 
     // "Мозги" системы, сканер и сервис валидатора
     private Presenter presenter;
@@ -52,25 +35,16 @@ public class ConsoleView implements View {
             try {
                 int command = getMenuChoice(); // Получаем комманду
 
-                switch (command) { // В зависимости от комманды выбираем опцию
-                    case SHOW_ARTICLES_COMMAND -> showArticles();
-                    case ADD_ARTICLE_COMMAND -> addArticle();
-                    case EDIT_ARTICLE_COMMAND -> editArticle();
-                    case DELETE_ARTICLE_COMMAND -> deleteArticle();
-                    case GET_ARTICLE_BY_ID_COMMAND -> getArticleById();
-                    case FILTER_ARTICLES_COMMAND -> presenter.onFilterArticles();
-                    case SORT_ARTICLES_COMMAND -> presenter.onSortArticles();
-                    case SEARCH_ARTICLES_COMMAND -> presenter.onSearchArticle();
-                    case ADD_USER_COMMAND -> addUser();
-                    case EDIT_USER_COMMAND -> editUser();
-                    case DELETE_USER_COMMAND -> deleteUser();
-                    case GET_USER_BY_ID_COMMAND -> getUserById();
-                    case SHOW_USERS_COMMAND -> showUsers();
-                    case SHOW_STATS -> showStats();
-                    case EXIT_COMMAND -> {
+                switch (command) {
+                    case 1 -> showArticlesMenu();
+                    case 2 -> showUsersMenu();
+                    case 3 -> showStats();
+                    case 4 -> exportArticles();
+                    case 0 -> {
                         showMessage("Exiting the application");
                         isRunning = false;
                     }
+
                     default -> showError("Unknown command");
                 }
             } catch (RuntimeException e) {
@@ -191,28 +165,82 @@ public class ConsoleView implements View {
     @Override
     public void showStartOptions() {
         System.out.println("-------------------------");
-        System.out.println("1. Show all articles");
-        System.out.println("2. Add article");
-        System.out.println("3. Edit article");
-        System.out.println("4. Delete article");
-        System.out.println("5. Get article by ID");
-        System.out.println("6. Filter articles");
-        System.out.println("7. Sort articles");
-        System.out.println("8. Search articles");
-        System.out.println("9. Add user");
-        System.out.println("10. Edit user");
-        System.out.println("11. Delete user");
-        System.out.println("12. Get user by ID");
-        System.out.println("13. Show all users");
-        System.out.println("14. Get stats");
+        System.out.println("1. Articles menu");
+        System.out.println("2. Users menu");
+        System.out.println("3. Get stats");
+        System.out.println("4. Export to Excel");
         System.out.println("0. Exit");
         System.out.println("-------------------------");
     }
+
+    // UI - меню команд для статей
+    private void showArticlesMenu(){
+        boolean back = false;
+        while (!back){
+            System.out.println("--- ARTICLES MENU ---");
+            System.out.println("1. Show all articles");
+            System.out.println("2. Add article");
+            System.out.println("3. Edit article");
+            System.out.println("4. Delete article");
+            System.out.println("5. Get article by ID");
+            System.out.println("6. Filter articles");
+            System.out.println("7. Sort articles");
+            System.out.println("8. Search articles");
+            System.out.println("0. Back to main menu");
+
+            int command = getMenuChoice();
+            switch (command){
+                case 1 -> showArticles();
+                case 2 -> addArticle();
+                case 3 -> editArticle();
+                case 4 -> deleteArticle();
+                case 5 -> getArticleById();
+                case 6 -> presenter.onFilterArticles();
+                case 7 -> presenter.onSortArticles();
+                case 8 -> presenter.onSearchArticle();
+                case 0 -> back = true;
+
+                default -> showError("Unknown command!");
+            }
+        }
+    }
+
+    // UI - меню команд для юзера
+    private void showUsersMenu(){
+        boolean back = false;
+        while (!back){
+            System.out.println("--- USERS MENU ---");
+            System.out.println("1. Add user");
+            System.out.println("2. Edit user");
+            System.out.println("3. Delete user");
+            System.out.println("4. Get user by ID");
+            System.out.println("5. Show all users");
+            System.out.println("0. Back to main menu");
+
+            int command = getMenuChoice();
+            switch (command){
+                case 1 -> addUser();
+                case 2 -> editUser();
+                case 3 -> deleteUser();
+                case 4 -> getUserById();
+                case 5 -> showUsers();
+                case 0 -> back = true;
+
+                default -> showError("Unknown command!");
+            }
+        }
+    }
+
 
     // UI - вывод статей
     @Override
     public void showArticles() {
         List<Article> showArticlesList = presenter.onGetArticles();
+
+        if (showArticlesList == null || showArticlesList.isEmpty()) {
+            showMessage("No articles found");
+            return;
+        }
 
         for (Article article : showArticlesList) {
             showArticle(article);
@@ -339,28 +367,19 @@ public class ConsoleView implements View {
 
     @Override
     public void showStats() {
-        int userCount = presenter.onGetUsers().toArray().length;
-        int articleCount = 0;
-        int pendingCount = 0;
-        int publishedCount = 0;
-        int rejectedCount = 0;
+        EditorialStatistics statistics = presenter.onGetStatistics();
 
-        List<Article> articleList = presenter.onGetArticles();
-
-        articleCount = articleList.toArray().length;
-
-        for (int i = 0; i < articleCount; i++) {
-            String statusName = articleList.get(i).getStatus().name();
-
-            if (statusName.equals("PENDING")) pendingCount++;
-            if (statusName.equals("PUBLISHED")) publishedCount++;
-            if (statusName.equals("REJECTED")) rejectedCount++;
-        }
-
-        System.out.println("User count: " + userCount);
-        System.out.println("Article count: " + articleCount);
-        System.out.println("Articles awaiting moderation: " + pendingCount);
-        System.out.println("Articles publised: " + publishedCount);
-        System.out.println("Articles rejected: " + rejectedCount);
+        System.out.println("User count: " + statistics.getUserCount());
+        System.out.println("Article count: " + statistics.getArticleCount());
+        System.out.println("Articles awaiting moderation: " + statistics.getPendingArticleCount());
+        System.out.println("Articles published: " + statistics.getPublishedArticleCount());
+        System.out.println("Articles rejected: " + statistics.getRejectedArticleCount());
     }
+
+    private void exportArticles(){
+        String path = getUserInput("Enter file path (e. g. articles.xlsx)").trim();
+        presenter.onExportArticles(path);
+
+    }
+
 }

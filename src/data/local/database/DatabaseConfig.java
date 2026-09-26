@@ -76,15 +76,17 @@ public class DatabaseConfig {
     private static Properties loadProperties() {
         Properties properties = new Properties();
         try (var stream = DatabaseConfig.class.getResourceAsStream("/database.properties")) {
+            // Если ничего не получаем - возвращаем properties
             if (stream == null) {
                 return properties;
             }
 
+            // Пытаемся прочитать данные и занести их в properties
             try (var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
                 properties.load(reader);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Couldn't read database.properties", e);
+            throw new IllegalStateException("Couldn't read database.properties", e); // Возвращаем ошибку
         }
         return properties;
     }
