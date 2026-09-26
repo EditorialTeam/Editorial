@@ -98,6 +98,25 @@ public class ConsoleView implements View {
         presenter.onAddArticle(article);
     }
 
+    private void changeArticleStatus() {
+        int articleId = getPositiveIntInput("Enter article ID:", "Article ID");
+        int num = 1;
+        for (Article.Status item : Article.Status.values()){
+            System.out.println(num + ". " + item);
+            num += 1;
+        }
+
+        int input = getIntInput("Enter new status ID:");
+
+        try {
+            Article.Status newStatus = Article.Status.values()[input-1];
+
+            presenter.onChangeArticleStatus(articleId, newStatus);
+        } catch (IllegalArgumentException e) {
+            showError("Available statuses: PENDING, MODERATING, REJECTED, PUBLISHED");
+        }
+    }
+
     // Метод удаления статьи по id
     private void deleteArticle() {
         int articleId = getPositiveIntInput("Enter article ID:", "Article ID");
@@ -181,11 +200,12 @@ public class ConsoleView implements View {
             System.out.println("1. Show all articles");
             System.out.println("2. Add article");
             System.out.println("3. Edit article");
-            System.out.println("4. Delete article");
-            System.out.println("5. Get article by ID");
-            System.out.println("6. Filter articles");
-            System.out.println("7. Sort articles");
-            System.out.println("8. Search articles");
+            System.out.println("4. Change article status");
+            System.out.println("5. Delete article");
+            System.out.println("6. Get article by ID");
+            System.out.println("7. Filter articles");
+            System.out.println("8. Sort articles");
+            System.out.println("9. Search articles");
             System.out.println("0. Back to main menu");
 
             int command = getMenuChoice();
@@ -193,11 +213,12 @@ public class ConsoleView implements View {
                 case 1 -> showArticles();
                 case 2 -> addArticle();
                 case 3 -> editArticle();
-                case 4 -> deleteArticle();
-                case 5 -> getArticleById();
-                case 6 -> presenter.onFilterArticles();
-                case 7 -> presenter.onSortArticles();
-                case 8 -> presenter.onSearchArticle();
+                case 4 -> changeArticleStatus();
+                case 5 -> deleteArticle();
+                case 6 -> getArticleById();
+                case 7 -> presenter.onFilterArticles();
+                case 8 -> presenter.onSortArticles();
+                case 9 -> presenter.onSearchArticle();
                 case 0 -> back = true;
 
                 default -> showError("Unknown command!");
@@ -336,10 +357,16 @@ public class ConsoleView implements View {
     // Метод получения валидированного ввода статуса из консоли
     private Article.Status getStatusInput(String prompt) {
         while (true) {
-            String input = getUserInput(prompt).trim().toUpperCase(Locale.ROOT);
+            int num = 1;
+            for (Article.Status item : Article.Status.values()){
+                System.out.println(num + ". " + item);
+                num += 1;
+            }
+
+            int input = getIntInput(prompt);
 
             try {
-                return Article.Status.valueOf(input);
+                return Article.Status.values()[input-1];
             } catch (IllegalArgumentException e) {
                 showError("Available statuses: PENDING, MODERATING, REJECTED, PUBLISHED");
             }
