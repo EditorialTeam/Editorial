@@ -77,6 +77,24 @@ class PresenterTest {
     }
 
     @Test
+    void onChangeArticleStatusShowsSuccess() {
+        assertTrue(presenter.onChangeArticleStatus(1, Article.Status.MODERATING));
+
+        verify(articleService).changeStatus(1, Article.Status.MODERATING);
+        assertEquals(List.of("Article status changed to MODERATING"), view.messages);
+    }
+
+    @Test
+    void onChangeArticleStatusShowsErrorAndReturnsFalse() {
+        doThrow(new IllegalArgumentException("Published article must have a publication date"))
+                .when(articleService)
+                .changeStatus(1, Article.Status.PUBLISHED);
+
+        assertFalse(presenter.onChangeArticleStatus(1, Article.Status.PUBLISHED));
+        assertEquals(List.of("Published article must have a publication date"), view.errors);
+    }
+
+    @Test
     void onDeleteArticleShowsSuccess() {
         presenter.onDeleteArticle(1);
 
