@@ -9,6 +9,7 @@ import domain.service.UserService;
 
 import java.util.List;
 
+// Класс Presenter ("мозги" UI): связывает View и UseCase-ы бизнес-логики
 public class Presenter {
     private final View view;
     private final ArticleService articleService;
@@ -27,6 +28,7 @@ public class Presenter {
         this.statisticsService = statisticsService;
     }
 
+    // Обработка добавления статьи
     public boolean onAddArticle(Article article) {
         try {
             articleService.add(article);
@@ -38,6 +40,7 @@ public class Presenter {
         }
     }
 
+    // Обработка получения всех статей
     public List<Article> onGetArticles() {
         try {
             return articleService.getAll();
@@ -47,6 +50,7 @@ public class Presenter {
         }
     }
 
+    // Обработка удаления статьи по id
     public void onDeleteArticle(int articleId) {
         try {
             articleService.delete(articleId);
@@ -56,6 +60,7 @@ public class Presenter {
         }
     }
 
+    // Обработка получения статьи по id
     public Article onGetArticleById(int articleId) {
         try {
             return articleService.getById(articleId);
@@ -65,18 +70,22 @@ public class Presenter {
         }
     }
 
+    // Обработка фильтрации статей
     public void onFilterArticles() {
         // Filtering has not been implemented yet.
     }
 
+    // Обработка сортировки статей
     public void onSortArticles() {
         // Sorting has not been implemented yet.
     }
 
+    // Обработка поиска статей
     public void onSearchArticle() {
         // Searching has not been implemented yet.
     }
 
+    // Обработка редактирования статьи по id
     public void onEditArticle(int articleId, String title, String content, Article.Status status) {
         try {
             articleService.edit(articleId, title, content, status);
@@ -85,6 +94,7 @@ public class Presenter {
         }
     }
 
+    // Обработка добавления пользователя
     public void onAddUser(User user) {
         try {
             userService.add(user);
@@ -94,6 +104,7 @@ public class Presenter {
         }
     }
 
+    // Обработка редактирования пользователя по id
     public void onEditUser(
             int userId,
             String username,
@@ -109,6 +120,7 @@ public class Presenter {
         }
     }
 
+    // Обработка удаления пользователя по id
     public void onDeleteUser(int userId) {
         try {
             userService.delete(userId);
@@ -118,6 +130,7 @@ public class Presenter {
         }
     }
 
+    // Обработка получения пользователя по id
     public User onGetUserById(int userId) {
         try {
             return userService.getById(userId);
