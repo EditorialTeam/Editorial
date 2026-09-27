@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -264,10 +267,108 @@ public class JdbcArticleRepository implements ArticleRepository {
 
     }
 
-    // Метод для поиска нескольких статей по чему-то
+    // Поиск статей по автору, названию и содержимому.
+    // Полное совпадение слова выше, чем вхождение запроса внутрь слова.
+    // Чем больше совпадений, тем выше статья. Знаки препинания не учитываются.
     @Override
     public List<Article> searchArticle(String keyword) {
-        return List.of();
+        List<String> keywords = keywords(keyword);
+        if (keywords.isEmpty()) {
+            throw new IllegalArgumentException("Search query must contain a word");
+        }
+
+        String sql = """
+                SELECT
+                    article.id,
+                    article.author_id,
+                    author.username AS author_name,
+                    article.title,
+                    article.content,
+                    status.code AS status_code,
+                    article.published_at
+                FROM articles AS article
+                JOIN article_statuses AS status ON status.id = article.status_id
+                JOIN users AS author ON author.id = article.author_id
+                """;
+
+        record ScoredArticle(Article article, int exactMatches, int partialMatches) {
+        }
+
+        try (var connection = connectionFactory.openConnection();
+             var statement = connection.prepareStatement(sql)
+        ) {
+            try (var result = statement.executeQuery()) {
+                List<ScoredArticle> scored = new ArrayList<>();
+
+                while (result.next()) {
+                    Article article = new Article(
+                            result.getInt("id"),
+                            result.getInt("author_id"),
+                            result.getString("title"),
+                            result.getString("content"),
+                            Article.Status.valueOf(result.getString("status_code")),
+                            result.getString("published_at")
+                    );
+                    int[] score = matchScore(
+                            keywords,
+                            result.getString("author_name"),
+                            article.getTitle(),
+                            article.getContent()
+                    );
+                    if (score[0] > 0 || score[1] > 0) {
+                        scored.add(new ScoredArticle(article, score[0], score[1]));
+                    }
+                }
+
+                scored.sort(Comparator
+                        .comparingInt(ScoredArticle::exactMatches).reversed()
+                        .thenComparing(Comparator.comparingInt(ScoredArticle::partialMatches).reversed())
+                        .thenComparingInt(item -> item.article().getId()));
+
+                return scored.stream().map(ScoredArticle::article).toList();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Couldn't search articles", e);
+        }
+    }
+
+    private static List<String> keywords(String query) {
+        return new ArrayList<>(new LinkedHashSet<>(tokenize(query)));
+    }
+
+    private static int[] matchScore(List<String> keywords, String authorName, String title, String content) {
+        List<String> tokens = new ArrayList<>();
+        tokens.addAll(tokenize(authorName));
+        tokens.addAll(tokenize(title));
+        tokens.addAll(tokenize(content));
+
+        int exactMatches = 0;
+        int partialMatches = 0;
+        for (String keyword : keywords) {
+            for (String token : tokens) {
+                if (token.equals(keyword)) {
+                    exactMatches++;
+                } else if (token.contains(keyword)) {
+                    partialMatches++;
+                }
+            }
+        }
+        return new int[]{exactMatches, partialMatches};
+    }
+
+    private static List<String> tokenize(String text) {
+        if (text == null || text.isBlank()) {
+            return List.of();
+        }
+
+        String normalized = text.toLowerCase(Locale.ROOT).replaceAll("\\p{P}+", " ").trim();
+        if (normalized.isEmpty()) {
+            return List.of();
+        }
+
+        return Arrays.stream(normalized.split("\\s+"))
+                .filter(token -> !token.isEmpty())
+                .toList();
     }
 
     // Метод для сортировки нескольких статей по чему-то (по факту поиск + сортировка после полученных статей)

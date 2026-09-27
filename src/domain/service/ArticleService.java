@@ -80,4 +80,8 @@ public class ArticleService {
         return articleRepository.filterArticles(column, value);
     }
 
+    public List<Article> search(String keyword) {
+        return articleRepository.searchArticle(keyword);
+    }
+
 }

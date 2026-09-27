@@ -136,4 +136,54 @@ class ConsoleViewTest {
         );
         assertTrue(output.toString(StandardCharsets.UTF_8).contains("Title: Alphabetical title"));
     }
+
+    @Test
+    void searchArticlesReadsKeywordsAndShowsMatches() {
+        String input = String.join(
+                System.lineSeparator(),
+                "1",
+                "8",
+                "java,",
+                "0",
+                "0"
+        ) + System.lineSeparator();
+        System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
+
+        Article article = new Article(
+                1,
+                7,
+                "Java title",
+                "Long enough content",
+                Article.Status.PENDING,
+                null
+        );
+        when(presenter.onSearchArticle("java,")).thenReturn(List.of(article));
+
+        ConsoleView searchView = new ConsoleView(null);
+        searchView.setPresenter(presenter);
+        searchView.run();
+
+        verify(presenter).onSearchArticle("java,");
+        assertTrue(output.toString(StandardCharsets.UTF_8).contains("Title: Java title"));
+    }
+
+    @Test
+    void searchArticlesShowsEmptyMessageWhenNothingMatches() {
+        String input = String.join(
+                System.lineSeparator(),
+                "1",
+                "8",
+                "missing",
+                "0",
+                "0"
+        ) + System.lineSeparator();
+        System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
+        when(presenter.onSearchArticle("missing")).thenReturn(List.of());
+
+        ConsoleView searchView = new ConsoleView(null);
+        searchView.setPresenter(presenter);
+        searchView.run();
+
+        assertTrue(output.toString(StandardCharsets.UTF_8).contains("No articles found"));
+    }
 }

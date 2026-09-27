@@ -179,6 +179,20 @@ public class ConsoleView implements View {
         }
     }
 
+    private void searchArticles() {
+        String keyword = getUserInput("Enter keywords:");
+        List<Article> articles = presenter.onSearchArticle(keyword);
+
+        if (articles.isEmpty()) {
+            showMessage("No articles found");
+            return;
+        }
+
+        for (Article article : articles) {
+            showArticle(article);
+        }
+    }
+
     private void sortArticles() {
         System.out.println("Sort articles by:");
         System.out.println("1. ID");
@@ -317,7 +331,7 @@ public class ConsoleView implements View {
                 case 5 -> getArticleById();
                 case 6 -> filterArticles();
                 case 7 -> sortArticles();
-                case 8 -> presenter.onSearchArticle();
+                case 8 -> searchArticles();
                 case 0 -> back = true;
 
                 default -> showError("Unknown command!");
