@@ -77,6 +77,32 @@ class PresenterTest {
     }
 
     @Test
+    void onEditArticleDelegatesToService() {
+        presenter.onEditArticle(1, "New title", "Updated content", Article.Status.MODERATING);
+
+        verify(articleService).edit(1, "New title", "Updated content", Article.Status.MODERATING);
+        assertEquals(List.of(), view.errors);
+    }
+
+    @Test
+    void onEditArticleKeepsTitleAndContentWhenOnlyStatusChanges() {
+        presenter.onEditArticle(1, "Title", "Long enough", Article.Status.MODERATING);
+
+        verify(articleService).edit(1, "Title", "Long enough", Article.Status.MODERATING);
+    }
+
+    @Test
+    void onEditArticleShowsError() {
+        doThrow(new IllegalArgumentException("Published article must have a publication date"))
+                .when(articleService)
+                .edit(1, "Title", "Long enough", Article.Status.PUBLISHED);
+
+        presenter.onEditArticle(1, "Title", "Long enough", Article.Status.PUBLISHED);
+
+        assertEquals(List.of("Published article must have a publication date"), view.errors);
+    }
+
+    @Test
     void onDeleteArticleShowsSuccess() {
         presenter.onDeleteArticle(1);
 
