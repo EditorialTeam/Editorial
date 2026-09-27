@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 public class ConsoleView implements View {
+    // Константы - номера комманд
 
     // "Мозги" системы, сканер и сервис валидатора
     private Presenter presenter;

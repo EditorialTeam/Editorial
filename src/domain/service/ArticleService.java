@@ -45,6 +45,7 @@ public class ArticleService {
         idValidator.validate(articleId, "Article ID");
 
         Article article = articleRepository.getArticleById(articleId);
+
         article.setTitle(title);
         article.setContent(content);
         article.setStatus(status);
