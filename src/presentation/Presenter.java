@@ -89,6 +89,7 @@ public class Presenter {
     public void onEditArticle(int articleId, String title, String content, Article.Status status) {
         try {
             articleService.edit(articleId, title, content, status);
+            view.showMessage("Article edited");
         } catch (IllegalArgumentException | IllegalStateException e) {
             view.showError(e.getMessage());
         }
