@@ -59,7 +59,7 @@ public class ArticleService {
         articleRepository.deleteArticle(articleId);
     }
 
-    public void exportToExcel(String filePath) {
+    public File exportToExcel(String filePath) {
         if (filePath == null || filePath.isBlank()) {
             throw new IllegalArgumentException("File path cannot be empty");
         }
@@ -71,6 +71,8 @@ public class ArticleService {
             throw new IllegalStateException("No articles to export");
         }
 
-        articleExporter.exportArticles(articles, new File(targetPath));
+        File file = new File(targetPath);
+        articleExporter.exportArticles(articles, file);
+        return file;
     }
 }

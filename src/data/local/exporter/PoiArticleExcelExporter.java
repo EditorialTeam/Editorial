@@ -14,6 +14,10 @@ public class PoiArticleExcelExporter implements ArticleExporter {
 
     @Override
     public void exportArticles(List<Article> articles, File targetFile) {
+        if (targetFile.getParentFile() != null) {
+            targetFile.getParentFile().mkdirs();
+        }
+
         // Создаем Excel-книгу (.xlsx) в памяти
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Articles");
