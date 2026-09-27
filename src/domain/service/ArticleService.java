@@ -1,12 +1,14 @@
 package domain.service;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.repository.ArticleExporter;
 import domain.repository.ArticleRepository;
 import domain.validator.ArticleValidator;
 import domain.validator.IdValidator;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.List;
 
 public class ArticleService {
@@ -15,12 +17,7 @@ public class ArticleService {
     private final ArticleValidator articleValidator;
     private final IdValidator idValidator;
 
-    public ArticleService(
-            ArticleRepository articleRepository,
-            ArticleExporter articleExporter,
-            ArticleValidator articleValidator,
-            IdValidator idValidator
-    ) {
+    public ArticleService(ArticleRepository articleRepository, ArticleExporter articleExporter, ArticleValidator articleValidator, IdValidator idValidator) {
         this.articleRepository = articleRepository;
         this.articleExporter = articleExporter;
         this.articleValidator = articleValidator;
@@ -45,10 +42,14 @@ public class ArticleService {
         idValidator.validate(articleId, "Article ID");
 
         Article article = articleRepository.getArticleById(articleId);
+        Article.Status previousStatus = article.getStatus();
 
         article.setTitle(title);
         article.setContent(content);
         article.setStatus(status);
+        if (status == Article.Status.PUBLISHED && previousStatus != Article.Status.PUBLISHED) {
+            article.setPublishedAt(Instant.now().toString());
+        }
 
         articleValidator.validate(article);
         articleRepository.editArticle(article);
@@ -59,7 +60,7 @@ public class ArticleService {
         articleRepository.deleteArticle(articleId);
     }
 
-    public void exportToExcel(String filePath) {
+    public File exportToExcel(String filePath) {
         if (filePath == null || filePath.isBlank()) {
             throw new IllegalArgumentException("File path cannot be empty");
         }
@@ -71,6 +72,21 @@ public class ArticleService {
             throw new IllegalStateException("No articles to export");
         }
 
-        articleExporter.exportArticles(articles, new File(targetPath));
+        File file = new File(targetPath);
+        articleExporter.exportArticles(articles, file);
+        return file;
     }
+
+    public List<Article> sortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
+        return articleRepository.sortArticles(col, dir);
+    }
+
+    public List<Article> filterArticles(ArticleQuery.FilterColumn column, String value) {
+        return articleRepository.filterArticles(column, value);
+    }
+
+    public List<Article> search(String keyword) {
+        return articleRepository.searchArticle(keyword);
+    }
+
 }

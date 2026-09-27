@@ -1,5 +1,6 @@
 package presentation.validation;
 
+import domain.model.Article;
 import domain.validator.ArticleValidator;
 import domain.validator.IdValidator;
 import domain.validator.UserValidator;
@@ -34,6 +35,14 @@ public class InputValidationService {
 
     public void validateArticleContent(String content) {
         articleValidator.validateContent(content);
+    }
+
+    public void validateArticleStatus(Article.Status status) {
+        articleValidator.validateStatus(status);
+    }
+
+    public void validatePublicationDate(String publicationDate) {
+        articleValidator.validatePublicationDate(publicationDate);
     }
 
     public void validateUsername(String username) {

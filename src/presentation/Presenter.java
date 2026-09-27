@@ -1,12 +1,14 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.model.EditorialStatistics;
 import domain.model.User;
 import domain.service.ArticleService;
 import domain.service.StatisticsService;
 import domain.service.UserService;
 
+import java.io.File;
 import java.util.List;
 
 // Класс Presenter ("мозги" UI): связывает View и UseCase-ы бизнес-логики
@@ -71,18 +73,36 @@ public class Presenter {
     }
 
     // Обработка фильтрации статей
-    public void onFilterArticles() {
-        // Filtering has not been implemented yet.
+    public List<Article> onFilterArticles(
+            ArticleQuery.FilterColumn column,
+            String value
+    ) {
+        try {
+            return articleService.filterArticles(column, value);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+            return List.of();
+        }
     }
 
     // Обработка сортировки статей
-    public void onSortArticles() {
-        // Sorting has not been implemented yet.
+    public List<Article> onSortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
+       try {
+           return articleService.sortArticles(col, dir);
+       } catch(IllegalArgumentException | IllegalStateException e) {
+           view.showError(e.getMessage());
+           return List.of();
+       }
     }
 
     // Обработка поиска статей
-    public void onSearchArticle() {
-        // Searching has not been implemented yet.
+    public List<Article> onSearchArticle(String keyword) {
+        try {
+            return articleService.search(keyword);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+            return List.of();
+        }
     }
 
     // Обработка редактирования статьи по id
@@ -162,7 +182,18 @@ public class Presenter {
     public void onExportArticles(String filePath) {
         try {
             articleService.exportToExcel(filePath);
-            view.showMessage("Articles exported successfully to " + filePath);
+            File file = new File(filePath.endsWith(".xlsx") ? filePath : filePath + ".xlsx");
+            view.showMessage("Articles exported successfully to " + file.getAbsolutePath());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+        }
+    }
+
+    public void onExportUsers(String filePath) {
+        try {
+            userService.exportToExcel(filePath);
+            File file = new File(filePath.endsWith(".xlsx") ? filePath : filePath + ".xlsx");
+            view.showMessage("Users exported successfully to " + file.getAbsolutePath());
         } catch (IllegalArgumentException | IllegalStateException e) {
             view.showError(e.getMessage());
         }

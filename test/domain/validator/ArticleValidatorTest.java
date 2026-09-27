@@ -107,6 +107,15 @@ class ArticleValidatorTest {
         assertDoesNotThrow(() -> validator.validate(validArticle(Article.Status.PUBLISHED, "2026-09-26")));
     }
 
+    @Test
+    void validatesPublicationDateFormat() {
+        assertDoesNotThrow(() -> validator.validatePublicationDate("2026-09-27"));
+        assertEquals(
+                "Publication date must use YYYY-MM-DD format",
+                exceptionMessage(() -> validator.validatePublicationDate("27.09.2026"))
+        );
+    }
+
     private static Article validArticle(Article.Status status, String publishedAt) {
         return new Article(1, 7, "Title", "Long enough", status, publishedAt);
     }
