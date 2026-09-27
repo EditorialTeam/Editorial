@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.model.User;
 import domain.service.ArticleService;
 import domain.service.StatisticsService;
@@ -108,6 +109,40 @@ class PresenterTest {
 
         verify(articleService).delete(1);
         assertEquals(List.of("Article deleted"), view.messages);
+    }
+
+    @Test
+    void onSortArticlesReturnsServiceResult() {
+        List<Article> articles = List.of(article());
+        when(articleService.sortArticles(
+                ArticleQuery.SortColumn.TITLE,
+                ArticleQuery.SortDir.ASC
+        )).thenReturn(articles);
+
+        assertSame(
+                articles,
+                presenter.onSortArticles(
+                        ArticleQuery.SortColumn.TITLE,
+                        ArticleQuery.SortDir.ASC
+                )
+        );
+    }
+
+    @Test
+    void onFilterArticlesReturnsServiceResult() {
+        List<Article> articles = List.of(article());
+        when(articleService.filterArticles(
+                ArticleQuery.FilterColumn.PUBLISHED_AT,
+                "2026-09-27"
+        )).thenReturn(articles);
+
+        assertSame(
+                articles,
+                presenter.onFilterArticles(
+                        ArticleQuery.FilterColumn.PUBLISHED_AT,
+                        "2026-09-27"
+                )
+        );
     }
 
     @Test

@@ -3,6 +3,9 @@ package domain.validator;
 import domain.model.Article;
 import domain.repository.UserRepository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 public class ArticleValidator {
     // Минимальные/Максимальные константы
     private static final int TITLE_MIN_LENGTH = 3;
@@ -72,6 +75,18 @@ public class ArticleValidator {
     public void validateStatus(Article.Status status) {
         if (status == null) {
             throw new IllegalArgumentException("Status is required");
+        }
+    }
+
+    public void validatePublicationDate(String publicationDate) {
+        if (isBlank(publicationDate)) {
+            throw new IllegalArgumentException("Publication date is required");
+        }
+
+        try {
+            LocalDate.parse(publicationDate);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Publication date must use YYYY-MM-DD format", e);
         }
     }
 
