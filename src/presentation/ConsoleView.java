@@ -109,24 +109,22 @@ public class ConsoleView implements View {
     private void editArticle() {
         int articleId = getPositiveIntInput("Enter article ID:", "Article ID");
 
-        System.out.println("1. Change status");
-        System.out.println("2. Change article");
+        String title = getValidatedInput("Enter new title (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleTitle);
+        String content = getValidatedInput("Enter new content (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleContent);
+        Article.Status status = getStatusInput("Enter new status (if you want you can leave this empty - nothing will change):");
 
-        int command = getMenuChoice();
-        switch (command) {
-            case 1 -> {
-                Article article = presenter.onGetArticleById(articleId);
-                Article.Status newStatus = getStatusInput("Enter new status:");
-                presenter.onEditArticle(articleId, article.getTitle(), article.getContent(), newStatus);
-            }
-            case 2 -> {
-                String title = getValidatedInput("Enter new title:", inputValidationService::validateArticleTitle);
-                String content = getValidatedInput("Enter new content:", inputValidationService::validateArticleContent);
-                Article.Status status = getStatusInput("Enter new status:");
-                presenter.onEditArticle(articleId, title, content, status);
-            }
-            default -> showError("Unknown command");
+        System.out.println("----------");
+        System.out.println(title + " | " + content + " | " + status);
+
+        if (title == null || content == null || status == null) {
+            Article article = presenter.onGetArticleById(articleId);
+
+            if (title == null) { title = article.getTitle(); }
+            if (content == null) { content = article.getContent(); }
+            if (status == null) { status = article.getStatus(); }
         }
+
+        presenter.onEditArticle(articleId, title, content, status);
     }
 
     // Метод получения статьи по id
@@ -152,10 +150,19 @@ public class ConsoleView implements View {
     // Метод редактирования пользователя по id
     private void editUser() {
         int userId = getPositiveIntInput("Enter user ID:", "User ID");
-        String username = getValidatedInput("Enter new username:", inputValidationService::validateUsername);
-        String email = getValidatedInput("Enter new email:", inputValidationService::validateEmail);
-        String passwordHash = getValidatedInput("Enter new password hash:", inputValidationService::validatePasswordHash);
-        User.Role role = getRoleInput("Enter new role:");
+        String username = getValidatedInput("Enter new username (if you want you can leave this empty - nothing will change):", inputValidationService::validateUsername);
+        String email = getValidatedInput("Enter new email (if you want you can leave this empty - nothing will change):", inputValidationService::validateEmail);
+        String passwordHash = getValidatedInput("Enter new password hash (if you want you can leave this empty - nothing will change):", inputValidationService::validatePasswordHash);
+        User.Role role = getRoleInput("Enter new role (if you want you can leave this empty - nothing will change):");
+
+        if (username == null || email == null || passwordHash == null || role == null) {
+            User user = presenter.onGetUserById(userId);
+
+            if (username == null) { username = user.getUsername(); }
+            if (email == null) { email = user.getEmail(); }
+            if (passwordHash == null) { passwordHash = user.getPasswordHash(); }
+            if (role == null) { role = user.getRole(); }
+        }
 
         presenter.onEditUser(userId, username, email, passwordHash, role);
     }
@@ -338,6 +345,11 @@ public class ConsoleView implements View {
     private String getValidatedInput(String prompt, Consumer<String> validator) {
         while (true) {
             String input = getUserInput(prompt).trim();
+
+            if (input.isEmpty()) {
+                return null;
+            }
+
             try {
                 validator.accept(input);
                 return input;
@@ -356,10 +368,15 @@ public class ConsoleView implements View {
                 num += 1;
             }
 
-            int input = getIntInput(prompt);
+            String input = getUserInput(prompt);
+            if (input.isEmpty()) {
+                return null;
+            }
+
+            int intInput = Integer.parseInt(input);
 
             try {
-                return Article.Status.values()[input - 1];
+                return Article.Status.values()[intInput - 1];
             } catch (ArrayIndexOutOfBoundsException e) {
                 showError("Available statuses: PENDING, MODERATING, REJECTED, PUBLISHED");
             }
@@ -375,10 +392,15 @@ public class ConsoleView implements View {
                 num += 1;
             }
 
-            int input = getIntInput(prompt);
+            String input = getUserInput(prompt);
+            if (input.isEmpty()) {
+                return null;
+            }
+
+            int intInput = Integer.parseInt(input);
 
             try {
-                return User.Role.values()[input - 1];
+                return User.Role.values()[intInput - 1];
             } catch (ArrayIndexOutOfBoundsException e){
                 showError("Value out of bounds");
             }
