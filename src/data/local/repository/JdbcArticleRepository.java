@@ -3,7 +3,9 @@ package data.local.repository;
 import com.fasterxml.jackson.databind.ext.SqlBlobSerializer;
 import data.local.database.DatabaseConnectionFactory;
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.repository.ArticleRepository;
+import org.apache.poi.sl.draw.geom.ArcToCommandIf;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -193,7 +195,37 @@ public class JdbcArticleRepository implements ArticleRepository {
 
     // Метод для сортировки нескольких статей по чему-то (по факту поиск + сортировка после полученных статей)
     @Override
-    public List<Article> sortArticles() {
-        return List.of();
+    public List<Article> sortArticles(ArticleQuery.SortColumn sortCol, ArticleQuery.SortDir sortDir) {
+        String column = switch(sortCol) {
+            case ID -> "id";
+            case TITLE -> "title";
+            case PUBLISHED_AT -> "published_at";
+        };
+
+        String dir = switch(sortDir) {
+            case ASC -> "ASC";
+            case DESC -> "DESC";
+        };
+
+        String sql = "SELECT * FROM articles ORDER BY " + column + " " + dir;
+
+        try (var connection = connectionFactory.openConnection();
+             var statement = connection.prepareStatement(sql);
+        ) {
+            try (var resSet = statement.executeQuery()) {
+                List<Article> returnArticles = new ArrayList<Article>();
+                while (resSet.next()) {
+                    returnArticles.add(getArticleById(resSet.getInt("id")));
+                }
+
+                if (returnArticles.isEmpty()) throw new IllegalStateException("No articles to sort");
+
+                return returnArticles;
+            }
+        }
+        catch (SQLException e) {
+            throw new IllegalStateException("Couldn't sort articles", e);
+        }
+
     }
 }

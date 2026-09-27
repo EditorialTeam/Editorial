@@ -1,6 +1,7 @@
 package domain.service;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.repository.ArticleExporter;
 import domain.repository.ArticleRepository;
 import domain.validator.ArticleValidator;
@@ -73,4 +74,9 @@ public class ArticleService {
 
         articleExporter.exportArticles(articles, new File(targetPath));
     }
+
+    public List<Article> sortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
+        return articleRepository.sortArticles(col, dir);
+    }
+
 }

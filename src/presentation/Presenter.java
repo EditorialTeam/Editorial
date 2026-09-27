@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.model.EditorialStatistics;
 import domain.model.User;
 import domain.service.ArticleService;
@@ -76,8 +77,13 @@ public class Presenter {
     }
 
     // Обработка сортировки статей
-    public void onSortArticles() {
-        // Sorting has not been implemented yet.
+    public List<Article> onSortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
+       try {
+           return articleService.sortArticles(col, dir);
+       } catch(IllegalArgumentException | IllegalStateException e) {
+           view.showError(e.getMessage());
+           return List.of();
+       }
     }
 
     // Обработка поиска статей

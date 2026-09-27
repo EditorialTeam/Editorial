@@ -1,6 +1,7 @@
 package domain.repository;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface ArticleRepository {
 
     List<Article> searchArticle(String keyword);
 
-    List<Article> sortArticles();
+    List<Article> sortArticles(ArticleQuery.SortColumn sortCol, ArticleQuery.SortDir sortDir);
 }

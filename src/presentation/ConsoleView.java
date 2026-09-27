@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.model.EditorialStatistics;
 import domain.model.User;
 import presentation.validation.InputValidationService;
@@ -136,7 +137,62 @@ public class ConsoleView implements View {
 
         showArticle(article);
     }
+    private void sortArticles() {
+        System.out.println("Sort articles by:");
+        System.out.println("1. ID");
+        System.out.println("2. Title");
+        System.out.println("3. Published at");
 
+        ArticleQuery.SortColumn sortColumn;
+        while (true) {
+            int columnChoice = getIntInput("Choose sort column:");
+
+            sortColumn = switch (columnChoice) {
+                case 1 -> ArticleQuery.SortColumn.ID;
+                case 2 -> ArticleQuery.SortColumn.TITLE;
+                case 3 -> ArticleQuery.SortColumn.PUBLISHED_AT;
+                default -> null;
+            };
+
+            if (sortColumn != null) {
+                break;
+            }
+
+            showError("Choose a value from 1 to 3");
+        }
+
+        System.out.println("Sort direction:");
+        System.out.println("1. Ascending");
+        System.out.println("2. Descending");
+
+        ArticleQuery.SortDir sortDirection;
+        while (true) {
+            int directionChoice = getIntInput("Choose sort direction:");
+
+            sortDirection = switch (directionChoice) {
+                case 1 -> ArticleQuery.SortDir.ASC;
+                case 2 -> ArticleQuery.SortDir.DESC;
+                default -> null;
+            };
+
+            if (sortDirection != null) {
+                break;
+            }
+
+            showError("Choose a value from 1 to 2");
+        }
+
+        List<Article> articles = presenter.onSortArticles(sortColumn, sortDirection);
+
+        if (articles.isEmpty()) {
+            showMessage("No articles found");
+            return;
+        }
+
+        for (Article article : articles) {
+            showArticle(article);
+        }
+    }
     // Метод добавления пользователя
     private void addUser() {
         String username = getValidatedInput("Enter username:", inputValidationService::validateUsername);
@@ -218,7 +274,7 @@ public class ConsoleView implements View {
                 case 4 -> deleteArticle();
                 case 5 -> getArticleById();
                 case 6 -> presenter.onFilterArticles();
-                case 7 -> presenter.onSortArticles();
+                case 7 -> sortArticles();
                 case 8 -> presenter.onSearchArticle();
                 case 0 -> back = true;
 
