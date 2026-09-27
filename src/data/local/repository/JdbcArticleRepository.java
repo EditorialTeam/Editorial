@@ -196,10 +196,17 @@ public class JdbcArticleRepository implements ArticleRepository {
     // Метод для сортировки нескольких статей по чему-то (по факту поиск + сортировка после полученных статей)
     @Override
     public List<Article> sortArticles(ArticleQuery.SortColumn sortCol, ArticleQuery.SortDir sortDir) {
+        if (sortCol == null) {
+            throw new IllegalArgumentException("Sort column is required");
+        }
+        if (sortDir == null) {
+            throw new IllegalArgumentException("Sort direction is required");
+        }
+
         String column = switch(sortCol) {
-            case ID -> "id";
-            case TITLE -> "title";
-            case PUBLISHED_AT -> "published_at";
+            case ID -> "article.id";
+            case TITLE -> "article.title";
+            case PUBLISHED_AT -> "article.published_at";
         };
 
         String dir = switch(sortDir) {
@@ -207,25 +214,40 @@ public class JdbcArticleRepository implements ArticleRepository {
             case DESC -> "DESC";
         };
 
-        String sql = "SELECT * FROM articles ORDER BY " + column + " " + dir;
+        String sql = """
+                SELECT
+                    article.id,
+                    article.author_id,
+                    article.title,
+                    article.content,
+                    status.code AS status_code,
+                    article.published_at
+                FROM articles AS article
+                JOIN article_statuses AS status ON status.id = article.status_id
+                ORDER BY %s %s NULLS LAST, article.id ASC
+                """.formatted(column, dir);
 
         try (var connection = connectionFactory.openConnection();
-             var statement = connection.prepareStatement(sql);
+             var statement = connection.prepareStatement(sql)
         ) {
             try (var resSet = statement.executeQuery()) {
-                List<Article> returnArticles = new ArrayList<Article>();
-                while (resSet.next()) {
-                    returnArticles.add(getArticleById(resSet.getInt("id")));
-                }
+                List<Article> returnArticles = new ArrayList<>();
 
-                if (returnArticles.isEmpty()) throw new IllegalStateException("No articles to sort");
+                while (resSet.next()) {
+                    returnArticles.add(new Article(
+                            resSet.getInt("id"),
+                            resSet.getInt("author_id"),
+                            resSet.getString("title"),
+                            resSet.getString("content"),
+                            Article.Status.valueOf(resSet.getString("status_code")),
+                            resSet.getString("published_at")
+                    ));
+                }
 
                 return returnArticles;
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new IllegalStateException("Couldn't sort articles", e);
         }
-
     }
 }
