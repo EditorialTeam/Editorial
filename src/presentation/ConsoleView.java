@@ -552,6 +552,7 @@ public class ConsoleView implements View {
         System.out.println("User count: " + statistics.getUserCount());
         System.out.println("Article count: " + statistics.getArticleCount());
         System.out.println("Articles awaiting moderation: " + statistics.getPendingArticleCount());
+        System.out.println("Articles moderating: " + statistics.getModeratingArticleCount());
         System.out.println("Articles published: " + statistics.getPublishedArticleCount());
         System.out.println("Articles rejected: " + statistics.getRejectedArticleCount());
     }

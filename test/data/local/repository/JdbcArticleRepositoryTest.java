@@ -6,6 +6,9 @@ import domain.model.ArticleQuery;
 import domain.model.User;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,6 +79,25 @@ public class JdbcArticleRepositoryTest extends JdbcTestBase {
         assertEquals("New title", stored.getTitle());
         assertEquals("New content", stored.getContent());
         assertEquals(Article.Status.MODERATING, stored.getStatus());
+    }
+
+    @Test
+    void editArticlePersistsPublicationTime() {
+        User author = persistAuthor();
+        Article article = new Article(0, author.getId(), "Draft title", "Draft content", Article.Status.PENDING, null);
+        articleRepository.addArticle(article);
+
+        article.setStatus(Article.Status.PUBLISHED);
+        article.setPublishedAt("2026-09-27T16:40:00Z");
+        articleRepository.editArticle(article);
+
+        Article stored = articleRepository.getArticleById(article.getId());
+        assertEquals(Article.Status.PUBLISHED, stored.getStatus());
+        OffsetDateTime publishedAt = OffsetDateTime.parse(
+                stored.getPublishedAt(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
+        );
+        assertEquals(Instant.parse("2026-09-27T16:40:00Z"), publishedAt.toInstant());
     }
 
     @Test

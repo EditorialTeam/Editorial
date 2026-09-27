@@ -45,7 +45,7 @@ class ConsoleViewTest {
     @Test
     void showStatsPrintsUserAndArticleCountsGroupedByStatus() {
         when(presenter.onGetStatistics()).thenReturn(
-                new EditorialStatistics(2, 4, 1, 1, 1)
+                new EditorialStatistics(2, 4, 1, 1, 1, 1)
         );
 
         view.showStats();
@@ -55,6 +55,7 @@ class ConsoleViewTest {
                 () -> assertTrue(result.contains("User count: 2")),
                 () -> assertTrue(result.contains("Article count: 4")),
                 () -> assertTrue(result.contains("Articles awaiting moderation: 1")),
+                () -> assertTrue(result.contains("Articles moderating: 1")),
                 () -> assertTrue(result.contains("Articles published: 1")),
                 () -> assertTrue(result.contains("Articles rejected: 1"))
         );

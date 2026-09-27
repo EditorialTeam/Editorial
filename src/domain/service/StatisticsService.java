@@ -23,12 +23,15 @@ public class StatisticsService {
         List<Article> articles = articleRepository.getArticles();
 
         int pendingCount = 0;
+        int moderatingCount = 0;
         int publishedCount = 0;
         int rejectedCount = 0;
 
         for (Article article : articles) {
             if (article.getStatus() == Article.Status.PENDING) {
                 pendingCount++;
+            } else if (article.getStatus() == Article.Status.MODERATING) {
+                moderatingCount++;
             } else if (article.getStatus() == Article.Status.PUBLISHED) {
                 publishedCount++;
             } else if (article.getStatus() == Article.Status.REJECTED) {
@@ -40,6 +43,7 @@ public class StatisticsService {
                 userRepository.getUsers().size(),
                 articles.size(),
                 pendingCount,
+                moderatingCount,
                 publishedCount,
                 rejectedCount
         );

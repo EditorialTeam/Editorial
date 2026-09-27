@@ -89,7 +89,8 @@ public class JdbcArticleRepository implements ArticleRepository {
                 SET
                     status_id = (SELECT id FROM article_statuses WHERE code = ?),
                     title = ?,
-                    content = ?
+                    content = ?,
+                    published_at = ?::timestamptz
                 WHERE id = ?
                 """;
 
@@ -100,7 +101,8 @@ public class JdbcArticleRepository implements ArticleRepository {
             statement.setString(1, article.getStatus().name());
             statement.setString(2, article.getTitle());
             statement.setString(3, article.getContent());
-            statement.setInt(4, article.getId());
+            statement.setString(4, article.getPublishedAt());
+            statement.setInt(5, article.getId());
 
             // Получаем кол-во измененных статей и выполняем запрос
             int affectedRows = statement.executeUpdate();
