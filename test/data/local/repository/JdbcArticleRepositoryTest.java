@@ -188,6 +188,81 @@ public class JdbcArticleRepositoryTest extends JdbcTestBase {
         assertEquals(Article.Status.PENDING, statusMatches.get(0).getStatus());
     }
 
+    @Test
+    void searchArticleRanksByKeywordMatchesAndIgnoresPunctuation() {
+        User javaAuthor = new User(0, "Java Expert", "java@example.com", "hash", User.Role.AUTHOR);
+        User other = new User(0, "editor", "editor@example.com", "hash", User.Role.EDITOR);
+        userRepository.addUser(javaAuthor);
+        userRepository.addUser(other);
+
+        articleRepository.addArticle(new Article(
+                0,
+                other.getId(),
+                "Notes",
+                "Nothing relevant",
+                Article.Status.PENDING,
+                null
+        ));
+        articleRepository.addArticle(new Article(
+                0,
+                other.getId(),
+                "Java!",
+                "A short note.",
+                Article.Status.PENDING,
+                null
+        ));
+        articleRepository.addArticle(new Article(
+                0,
+                javaAuthor.getId(),
+                "Guide",
+                "Java, java and more java.",
+                Article.Status.PENDING,
+                null
+        ));
+
+        var found = articleRepository.searchArticle("java,");
+
+        assertEquals(2, found.size());
+        assertEquals("Guide", found.get(0).getTitle());
+        assertEquals("Java!", found.get(1).getTitle());
+        assertThrows(IllegalArgumentException.class, () -> articleRepository.searchArticle("..."));
+    }
+
+    @Test
+    void searchArticleRanksPartialWordMatchesBelowExactMatches() {
+        User author = persistAuthor();
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Javascript notes",
+                "A language overview",
+                Article.Status.PENDING,
+                null
+        ));
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Java",
+                "A short note",
+                Article.Status.PENDING,
+                null
+        ));
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Unrelated",
+                "Nothing here",
+                Article.Status.PENDING,
+                null
+        ));
+
+        var found = articleRepository.searchArticle("java");
+
+        assertEquals(2, found.size());
+        assertEquals("Java", found.get(0).getTitle());
+        assertEquals("Javascript notes", found.get(1).getTitle());
+    }
+
     private static User persistAuthor() {
         User author = new User(0, "author", "author@example.com", "hash", User.Role.AUTHOR);
         userRepository.addUser(author);

@@ -96,8 +96,13 @@ public class Presenter {
     }
 
     // Обработка поиска статей
-    public void onSearchArticle() {
-        // Searching has not been implemented yet.
+    public List<Article> onSearchArticle(String keyword) {
+        try {
+            return articleService.search(keyword);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+            return List.of();
+        }
     }
 
     // Обработка редактирования статьи по id
