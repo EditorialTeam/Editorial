@@ -77,20 +77,28 @@ class PresenterTest {
     }
 
     @Test
-    void onChangeArticleStatusShowsSuccess() {
-        assertTrue(presenter.onChangeArticleStatus(1, Article.Status.MODERATING));
+    void onEditArticleDelegatesToService() {
+        presenter.onEditArticle(1, "New title", "Updated content", Article.Status.MODERATING);
 
-        verify(articleService).changeStatus(1, Article.Status.MODERATING);
-        assertEquals(List.of("Article status changed to MODERATING"), view.messages);
+        verify(articleService).edit(1, "New title", "Updated content", Article.Status.MODERATING);
+        assertEquals(List.of(), view.errors);
     }
 
     @Test
-    void onChangeArticleStatusShowsErrorAndReturnsFalse() {
+    void onEditArticleKeepsTitleAndContentWhenOnlyStatusChanges() {
+        presenter.onEditArticle(1, "Title", "Long enough", Article.Status.MODERATING);
+
+        verify(articleService).edit(1, "Title", "Long enough", Article.Status.MODERATING);
+    }
+
+    @Test
+    void onEditArticleShowsError() {
         doThrow(new IllegalArgumentException("Published article must have a publication date"))
                 .when(articleService)
-                .changeStatus(1, Article.Status.PUBLISHED);
+                .edit(1, "Title", "Long enough", Article.Status.PUBLISHED);
 
-        assertFalse(presenter.onChangeArticleStatus(1, Article.Status.PUBLISHED));
+        presenter.onEditArticle(1, "Title", "Long enough", Article.Status.PUBLISHED);
+
         assertEquals(List.of("Published article must have a publication date"), view.errors);
     }
 

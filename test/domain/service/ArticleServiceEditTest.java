@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ArticleServiceChangeStatusTest {
+class ArticleServiceEditTest {
     @Mock
     private ArticleRepository articleRepository;
     @Mock
@@ -41,12 +41,26 @@ class ArticleServiceChangeStatusTest {
     }
 
     @Test
-    void changeStatusUpdatesStatusAndSavesArticle() {
+    void editUpdatesTitleContentAndStatus() {
         Article article = pendingArticle();
         when(userRepository.existsById(7)).thenReturn(true);
         when(articleRepository.getArticleById(1)).thenReturn(article);
 
-        articleService.changeStatus(1, Article.Status.MODERATING);
+        articleService.edit(1, "New title", "Updated content", Article.Status.MODERATING);
+
+        assertEquals("New title", article.getTitle());
+        assertEquals("Updated content", article.getContent());
+        assertEquals(Article.Status.MODERATING, article.getStatus());
+        verify(articleRepository).editArticle(article);
+    }
+
+    @Test
+    void editChangesOnlyStatusWhenTitleAndContentStayTheSame() {
+        Article article = pendingArticle();
+        when(userRepository.existsById(7)).thenReturn(true);
+        when(articleRepository.getArticleById(1)).thenReturn(article);
+
+        articleService.edit(1, "Title", "Long enough", Article.Status.MODERATING);
 
         assertEquals(Article.Status.MODERATING, article.getStatus());
         assertEquals("Title", article.getTitle());
@@ -55,35 +69,35 @@ class ArticleServiceChangeStatusTest {
     }
 
     @Test
-    void changeStatusAllowsPublishedWhenDateIsPresent() {
+    void editAllowsPublishedWhenDateIsPresent() {
         Article article = new Article(1, 7, "Title", "Long enough", Article.Status.PENDING, "2026-09-26");
         when(userRepository.existsById(7)).thenReturn(true);
         when(articleRepository.getArticleById(1)).thenReturn(article);
 
-        articleService.changeStatus(1, Article.Status.PUBLISHED);
+        articleService.edit(1, "Title", "Long enough", Article.Status.PUBLISHED);
 
         assertEquals(Article.Status.PUBLISHED, article.getStatus());
         verify(articleRepository).editArticle(article);
     }
 
     @Test
-    void changeStatusRejectsInvalidArticleId() {
+    void editRejectsInvalidArticleId() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> articleService.changeStatus(0, Article.Status.REJECTED)
+                () -> articleService.edit(0, "Title", "Long enough", Article.Status.REJECTED)
         );
         verify(articleRepository, never()).getArticleById(0);
         verify(articleRepository, never()).editArticle(any());
     }
 
     @Test
-    void changeStatusRejectsNullStatus() {
+    void editRejectsNullStatus() {
         when(userRepository.existsById(7)).thenReturn(true);
         when(articleRepository.getArticleById(1)).thenReturn(pendingArticle());
 
         IllegalArgumentException error = assertThrows(
                 IllegalArgumentException.class,
-                () -> articleService.changeStatus(1, null)
+                () -> articleService.edit(1, "Title", "Long enough", null)
         );
 
         assertEquals("Status is required", error.getMessage());
@@ -91,13 +105,13 @@ class ArticleServiceChangeStatusTest {
     }
 
     @Test
-    void changeStatusRejectsPublishedArticleWithoutDate() {
+    void editRejectsPublishedArticleWithoutDate() {
         when(userRepository.existsById(7)).thenReturn(true);
         when(articleRepository.getArticleById(1)).thenReturn(pendingArticle());
 
         IllegalArgumentException error = assertThrows(
                 IllegalArgumentException.class,
-                () -> articleService.changeStatus(1, Article.Status.PUBLISHED)
+                () -> articleService.edit(1, "Title", "Long enough", Article.Status.PUBLISHED)
         );
 
         assertEquals("Published article must have a publication date", error.getMessage());

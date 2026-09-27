@@ -40,17 +40,6 @@ public class Presenter {
         }
     }
 
-    public boolean onChangeArticleStatus(int articleId, Article.Status newStatus) {
-        try {
-            articleService.changeStatus(articleId, newStatus);
-            view.showMessage("Article status changed to " + newStatus);
-            return true;
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-            return false;
-        }
-    }
-
     // Обработка получения всех статей
     public List<Article> onGetArticles() {
         try {
@@ -100,6 +89,7 @@ public class Presenter {
     public void onEditArticle(int articleId, String title, String content, Article.Status status) {
         try {
             articleService.edit(articleId, title, content, status);
+            view.showMessage("Article edited");
         } catch (IllegalArgumentException | IllegalStateException e) {
             view.showError(e.getMessage());
         }

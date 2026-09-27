@@ -54,16 +54,6 @@ public class ArticleService {
         articleRepository.editArticle(article);
     }
 
-    public void changeStatus(int articleId, Article.Status newStatus) {
-        idValidator.validate(articleId, "Article ID");
-
-        Article article = articleRepository.getArticleById(articleId);
-        article.setStatus(newStatus);
-
-        articleValidator.validate(article);
-        articleRepository.editArticle(article);
-    }
-
     public void delete(int articleId) {
         idValidator.validate(articleId, "Article ID");
         articleRepository.deleteArticle(articleId);
