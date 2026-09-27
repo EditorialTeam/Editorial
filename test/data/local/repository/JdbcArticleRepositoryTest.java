@@ -2,6 +2,7 @@ package data.local.repository;
 
 import data.local.JdbcTestBase;
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.model.User;
 import org.junit.jupiter.api.Test;
 
@@ -116,6 +117,75 @@ public class JdbcArticleRepositoryTest extends JdbcTestBase {
     @Test
     void getArticleByIdThrowsWhenArticleDoesNotExist() {
         assertThrows(IllegalArgumentException.class, () -> articleRepository.getArticleById(7));
+    }
+
+    @Test
+    void sortArticlesReturnsFullyMappedArticlesInRequestedOrder() {
+        User author = persistAuthor();
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Zebra title",
+                "Zebra content",
+                Article.Status.PENDING,
+                null
+        ));
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Alpha title",
+                "Alpha content",
+                Article.Status.PUBLISHED,
+                "2026-09-27T12:00:00Z"
+        ));
+
+        var articles = articleRepository.sortArticles(
+                ArticleQuery.SortColumn.TITLE,
+                ArticleQuery.SortDir.ASC
+        );
+
+        assertEquals(2, articles.size());
+        assertEquals("Alpha title", articles.get(0).getTitle());
+        assertEquals(Article.Status.PUBLISHED, articles.get(0).getStatus());
+        assertEquals("Zebra title", articles.get(1).getTitle());
+        assertEquals(Article.Status.PENDING, articles.get(1).getStatus());
+    }
+
+    @Test
+    void filterArticlesSupportsPublicationDatesAndExactStatuses() {
+        User author = persistAuthor();
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Learning PostgreSQL",
+                "Database content",
+                Article.Status.PUBLISHED,
+                "2026-09-27T12:00:00Z"
+        ));
+        articleRepository.addArticle(new Article(
+                0,
+                author.getId(),
+                "Java basics",
+                "Java content",
+                Article.Status.PENDING,
+                null
+        ));
+
+        var dateMatches = articleRepository.filterArticles(
+                ArticleQuery.FilterColumn.PUBLISHED_AT,
+                "2026-09-27"
+        );
+        var statusMatches = articleRepository.filterArticles(
+                ArticleQuery.FilterColumn.STATUS,
+                "pending"
+        );
+
+        assertEquals(1, dateMatches.size());
+        assertEquals("Learning PostgreSQL", dateMatches.get(0).getTitle());
+        assertEquals(Article.Status.PUBLISHED, dateMatches.get(0).getStatus());
+        assertEquals(1, statusMatches.size());
+        assertEquals("Java basics", statusMatches.get(0).getTitle());
+        assertEquals(Article.Status.PENDING, statusMatches.get(0).getStatus());
     }
 
     private static User persistAuthor() {

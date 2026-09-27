@@ -1,6 +1,7 @@
 package domain.service;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.repository.ArticleExporter;
 import domain.repository.ArticleRepository;
 import domain.validator.ArticleValidator;
@@ -15,12 +16,7 @@ public class ArticleService {
     private final ArticleValidator articleValidator;
     private final IdValidator idValidator;
 
-    public ArticleService(
-            ArticleRepository articleRepository,
-            ArticleExporter articleExporter,
-            ArticleValidator articleValidator,
-            IdValidator idValidator
-    ) {
+    public ArticleService(ArticleRepository articleRepository, ArticleExporter articleExporter, ArticleValidator articleValidator, IdValidator idValidator) {
         this.articleRepository = articleRepository;
         this.articleExporter = articleExporter;
         this.articleValidator = articleValidator;
@@ -73,4 +69,13 @@ public class ArticleService {
 
         articleExporter.exportArticles(articles, new File(targetPath));
     }
+
+    public List<Article> sortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
+        return articleRepository.sortArticles(col, dir);
+    }
+
+    public List<Article> filterArticles(ArticleQuery.FilterColumn column, String value) {
+        return articleRepository.filterArticles(column, value);
+    }
+
 }
