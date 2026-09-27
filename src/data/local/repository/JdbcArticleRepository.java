@@ -1,16 +1,16 @@
 package data.local.repository;
 
-import com.fasterxml.jackson.databind.ext.SqlBlobSerializer;
 import data.local.database.DatabaseConnectionFactory;
 import domain.model.Article;
 import domain.model.ArticleQuery;
 import domain.repository.ArticleRepository;
-import org.apache.poi.sl.draw.geom.ArcToCommandIf;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 // Класс для работы с БД в Java коде
 public class JdbcArticleRepository implements ArticleRepository {
@@ -111,8 +111,70 @@ public class JdbcArticleRepository implements ArticleRepository {
 
     // Функция для фильтрации статей
     @Override
-    public void filterArticles() {
+    public List<Article> filterArticles(
+            ArticleQuery.FilterColumn filterColumn,
+            String filterValue
+    ) {
+        if (filterColumn == null) {
+            throw new IllegalArgumentException("Filter column is required");
+        }
+        if (filterValue == null || filterValue.isBlank()) {
+            throw new IllegalArgumentException("Filter value is required");
+        }
 
+        String condition = switch (filterColumn) {
+            case PUBLISHED_AT -> "article.published_at::date = ?::date";
+            case STATUS -> "status.code = ?";
+        };
+
+        String parameter;
+        try {
+            parameter = switch (filterColumn) {
+                case PUBLISHED_AT -> LocalDate.parse(filterValue.trim()).toString();
+                case STATUS -> filterValue.trim().toUpperCase(Locale.ROOT);
+            };
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Publication date must use YYYY-MM-DD format", e);
+        }
+
+        String sql = """
+                SELECT
+                    article.id,
+                    article.author_id,
+                    article.title,
+                    article.content,
+                    status.code AS status_code,
+                    article.published_at
+                FROM articles AS article
+                JOIN article_statuses AS status ON status.id = article.status_id
+                WHERE %s
+                ORDER BY article.id ASC
+                """.formatted(condition);
+
+        try (var connection = connectionFactory.openConnection();
+             var statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, parameter);
+
+            try (var result = statement.executeQuery()) {
+                List<Article> returnArticles = new ArrayList<Article>();
+
+                while (result.next()) {
+                    returnArticles.add(new Article(
+                            result.getInt("id"),
+                            result.getInt("author_id"),
+                            result.getString("title"),
+                            result.getString("content"),
+                            Article.Status.valueOf(result.getString("status_code")),
+                            result.getString("published_at")
+                    ));
+                }
+
+                return returnArticles;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Couldn't filter articles", e);
+        }
     }
 
     // Функция для получения конкретной статьи по id

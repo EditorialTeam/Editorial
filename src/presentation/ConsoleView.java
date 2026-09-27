@@ -111,8 +111,8 @@ public class ConsoleView implements View {
     private void editArticle() {
         int articleId = getPositiveIntInput("Enter article ID:", "Article ID");
 
-        String title = getValidatedInput("Enter new title (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleTitle);
-        String content = getValidatedInput("Enter new content (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleContent);
+        String title = getOptionalValidatedInput("Enter new title (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleTitle);
+        String content = getOptionalValidatedInput("Enter new content (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleContent);
         Article.Status status = getStatusInput("Enter new status (if you want you can leave this empty - nothing will change):");
 
         System.out.println("----------");
@@ -137,6 +137,51 @@ public class ConsoleView implements View {
 
         showArticle(article);
     }
+
+    private void filterArticles() {
+        System.out.println("Filter articles by:");
+        System.out.println("1. Publication date");
+        System.out.println("2. Status");
+
+        ArticleQuery.FilterColumn filterColumn;
+        while (true) {
+            int choice = getIntInput("Choose filter:");
+
+            filterColumn = switch (choice) {
+                case 1 -> ArticleQuery.FilterColumn.PUBLISHED_AT;
+                case 2 -> ArticleQuery.FilterColumn.STATUS;
+                default -> null;
+            };
+
+            if (filterColumn != null) {
+                break;
+            }
+
+            showError("Choose a value from 1 to 2");
+        }
+
+        String filterValue;
+        if (filterColumn == ArticleQuery.FilterColumn.PUBLISHED_AT) {
+            filterValue = getValidatedInput(
+                    "Enter publication date (YYYY-MM-DD):",
+                    inputValidationService::validatePublicationDate
+            );
+        } else {
+            filterValue = getValidatedStatusInput("Choose status:").name();
+        }
+
+        List<Article> articles = presenter.onFilterArticles(filterColumn, filterValue);
+
+        if (articles.isEmpty()) {
+            showMessage("No articles found");
+            return;
+        }
+
+        for (Article article : articles) {
+            showArticle(article);
+        }
+    }
+
     private void sortArticles() {
         System.out.println("Sort articles by:");
         System.out.println("1. ID");
@@ -207,9 +252,9 @@ public class ConsoleView implements View {
     // Метод редактирования пользователя по id
     private void editUser() {
         int userId = getPositiveIntInput("Enter user ID:", "User ID");
-        String username = getValidatedInput("Enter new username (if you want you can leave this empty - nothing will change):", inputValidationService::validateUsername);
-        String email = getValidatedInput("Enter new email (if you want you can leave this empty - nothing will change):", inputValidationService::validateEmail);
-        String passwordHash = getValidatedInput("Enter new password hash (if you want you can leave this empty - nothing will change):", inputValidationService::validatePasswordHash);
+        String username = getOptionalValidatedInput("Enter new username (if you want you can leave this empty - nothing will change):", inputValidationService::validateUsername);
+        String email = getOptionalValidatedInput("Enter new email (if you want you can leave this empty - nothing will change):", inputValidationService::validateEmail);
+        String passwordHash = getOptionalValidatedInput("Enter new password hash (if you want you can leave this empty - nothing will change):", inputValidationService::validatePasswordHash);
         User.Role role = getRoleInput("Enter new role (if you want you can leave this empty - nothing will change):");
 
         if (username == null || email == null || passwordHash == null || role == null) {
@@ -273,7 +318,7 @@ public class ConsoleView implements View {
                 case 3 -> editArticle();
                 case 4 -> deleteArticle();
                 case 5 -> getArticleById();
-                case 6 -> presenter.onFilterArticles();
+                case 6 -> filterArticles();
                 case 7 -> sortArticles();
                 case 8 -> presenter.onSearchArticle();
                 case 0 -> back = true;
@@ -403,6 +448,19 @@ public class ConsoleView implements View {
         while (true) {
             String input = getUserInput(prompt).trim();
 
+            try {
+                validator.accept(input);
+                return input;
+            } catch (IllegalArgumentException e) {
+                showError(e.getMessage());
+            }
+        }
+    }
+
+    private String getOptionalValidatedInput(String prompt, Consumer<String> validator) {
+        while (true) {
+            String input = getUserInput(prompt).trim();
+
             if (input.isEmpty()) {
                 return null;
             }
@@ -430,12 +488,24 @@ public class ConsoleView implements View {
                 return null;
             }
 
-            int intInput = Integer.parseInt(input);
+            try {
+                int intInput = Integer.parseInt(input);
+                return Article.Status.values()[intInput - 1];
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                showError("Available statuses: PENDING, MODERATING, REJECTED, PUBLISHED");
+            }
+        }
+    }
+
+    private Article.Status getValidatedStatusInput(String prompt) {
+        while (true) {
+            Article.Status status = getStatusInput(prompt);
 
             try {
-                return Article.Status.values()[intInput - 1];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                showError("Available statuses: PENDING, MODERATING, REJECTED, PUBLISHED");
+                inputValidationService.validateArticleStatus(status);
+                return status;
+            } catch (IllegalArgumentException e) {
+                showError(e.getMessage());
             }
         }
     }

@@ -129,6 +129,23 @@ class PresenterTest {
     }
 
     @Test
+    void onFilterArticlesReturnsServiceResult() {
+        List<Article> articles = List.of(article());
+        when(articleService.filterArticles(
+                ArticleQuery.FilterColumn.PUBLISHED_AT,
+                "2026-09-27"
+        )).thenReturn(articles);
+
+        assertSame(
+                articles,
+                presenter.onFilterArticles(
+                        ArticleQuery.FilterColumn.PUBLISHED_AT,
+                        "2026-09-27"
+                )
+        );
+    }
+
+    @Test
     void onAddUserShowsErrorFromService() {
         User user = user();
         doThrow(new IllegalArgumentException("Email is invalid"))

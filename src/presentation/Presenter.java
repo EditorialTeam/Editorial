@@ -72,8 +72,16 @@ public class Presenter {
     }
 
     // Обработка фильтрации статей
-    public void onFilterArticles() {
-        // Filtering has not been implemented yet.
+    public List<Article> onFilterArticles(
+            ArticleQuery.FilterColumn column,
+            String value
+    ) {
+        try {
+            return articleService.filterArticles(column, value);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+            return List.of();
+        }
     }
 
     // Обработка сортировки статей

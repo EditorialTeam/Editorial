@@ -14,7 +14,7 @@ public interface ArticleRepository {
 
     void editArticle(Article article);
 
-    void filterArticles();
+    List<Article> filterArticles(ArticleQuery.FilterColumn filterCol, String filterValue);
 
     Article getArticleById(int articleId);
 

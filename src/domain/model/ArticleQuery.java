@@ -9,6 +9,11 @@ public class ArticleQuery {
     public enum SortColumn {
         ID,
         TITLE,
-        PUBLISHED_AT
+        PUBLISHED_AT,
+    }
+
+    public enum FilterColumn {
+        PUBLISHED_AT,
+        STATUS
     }
 }
