@@ -70,5 +70,7 @@ public class Article {
     public enum Status {
         PENDING, MODERATING, REJECTED, PUBLISHED
     }
+
+
 }
 

@@ -4,10 +4,12 @@ import data.local.database.DatabaseConfig;
 import data.local.database.DatabaseConnectionFactory;
 import data.local.database.DatabaseMigrator;
 import data.local.exporter.PoiArticleExcelExporter;
+import data.local.exporter.PoiUserExcelExporter;
 import data.local.repository.JdbcArticleRepository;
 import data.local.repository.JdbcUserRepository;
 import domain.repository.ArticleExporter;
 import domain.repository.ArticleRepository;
+import domain.repository.UserExporter;
 import domain.repository.UserRepository;
 import domain.service.ArticleService;
 import domain.service.StatisticsService;
@@ -32,6 +34,7 @@ public class Application {
 
         // Экспортер для экспорта Статей в Excel формат
         ArticleExporter articleExporter = new PoiArticleExcelExporter();
+        UserExporter userExporter = new PoiUserExcelExporter();
         // Создание валидаторов
         ArticleValidator articleValidator = new ArticleValidator(userRepository);
         UserValidator userValidator = new UserValidator();
@@ -49,7 +52,7 @@ public class Application {
                 articleValidator,
                 idValidator
         );
-        UserService userService = new UserService(userRepository, userValidator, idValidator);
+        UserService userService = new UserService(userRepository, userExporter, userValidator, idValidator);
         StatisticsService statisticsService = new StatisticsService(articleRepository, userRepository);
 
         // UI

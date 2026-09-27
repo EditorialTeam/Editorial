@@ -1,6 +1,7 @@
 package domain.service;
 
 import domain.model.Article;
+import domain.model.ArticleQuery;
 import domain.repository.ArticleExporter;
 import domain.repository.ArticleRepository;
 import domain.validator.ArticleValidator;
@@ -15,12 +16,7 @@ public class ArticleService {
     private final ArticleValidator articleValidator;
     private final IdValidator idValidator;
 
-    public ArticleService(
-            ArticleRepository articleRepository,
-            ArticleExporter articleExporter,
-            ArticleValidator articleValidator,
-            IdValidator idValidator
-    ) {
+    public ArticleService(ArticleRepository articleRepository, ArticleExporter articleExporter, ArticleValidator articleValidator, IdValidator idValidator) {
         this.articleRepository = articleRepository;
         this.articleExporter = articleExporter;
         this.articleValidator = articleValidator;
@@ -59,7 +55,7 @@ public class ArticleService {
         articleRepository.deleteArticle(articleId);
     }
 
-    public void exportToExcel(String filePath) {
+    public File exportToExcel(String filePath) {
         if (filePath == null || filePath.isBlank()) {
             throw new IllegalArgumentException("File path cannot be empty");
         }
@@ -71,6 +67,17 @@ public class ArticleService {
             throw new IllegalStateException("No articles to export");
         }
 
-        articleExporter.exportArticles(articles, new File(targetPath));
+        File file = new File(targetPath);
+        articleExporter.exportArticles(articles, file);
+        return file;
     }
+
+    public List<Article> sortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
+        return articleRepository.sortArticles(col, dir);
+    }
+
+    public List<Article> filterArticles(ArticleQuery.FilterColumn column, String value) {
+        return articleRepository.filterArticles(column, value);
+    }
+
 }
