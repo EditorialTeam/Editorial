@@ -173,7 +173,14 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getUsers() {
         String sql = """
-                SELECT * FROM users
+                SELECT
+                    users.id,
+                    users.username,
+                    users.email,
+                    users.password_hash,
+                    roles.code AS role_code
+                FROM users
+                JOIN roles ON roles.id = users.role_id
                 """;
 
         try (var connection = connectionFactory.openConnection();
@@ -181,17 +188,23 @@ public class JdbcUserRepository implements UserRepository {
         ) {
 
             try (var resSet = statement.executeQuery()) {
-                List<User> returnUsersList = new ArrayList<User>();
+                List<User> returnUsersList = new ArrayList<>();
 
                 while (resSet.next()) {
-                    returnUsersList.add(getUserById(resSet.getInt("id")));
+                    returnUsersList.add(new User(
+                            resSet.getInt("id"),
+                            resSet.getString("username"),
+                            resSet.getString("email"),
+                            resSet.getString("password_hash"),
+                            User.Role.valueOf(resSet.getString("role_code"))
+                    ));
                 }
 
                 return returnUsersList;
             }
         }
         catch (SQLException e) {
-            throw new IllegalStateException("Couldn't get usesr");
+            throw new IllegalStateException("Couldn't get users", e);
         }
 
     }
