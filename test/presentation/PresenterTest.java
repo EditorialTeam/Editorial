@@ -129,6 +129,43 @@ class PresenterTest {
     }
 
     @Test
+    void onSearchArticleReturnsServiceResult() {
+        List<Article> articles = List.of(article());
+        when(articleService.search("java")).thenReturn(articles);
+
+        assertSame(articles, presenter.onSearchArticle("java"));
+    }
+
+    @Test
+    void onSearchArticleShowsErrorAndReturnsEmptyList() {
+        when(articleService.search("...")).thenThrow(new IllegalArgumentException("Search query must contain a word"));
+
+        assertEquals(List.of(), presenter.onSearchArticle("..."));
+        assertEquals(List.of("Search query must contain a word"), view.errors);
+    }
+
+    @Test
+    void onSortArticlesShowsErrorAndReturnsEmptyList() {
+        when(articleService.sortArticles(null, ArticleQuery.SortDir.ASC))
+                .thenThrow(new IllegalArgumentException("Sort column is required"));
+
+        assertEquals(List.of(), presenter.onSortArticles(null, ArticleQuery.SortDir.ASC));
+        assertEquals(List.of("Sort column is required"), view.errors);
+    }
+
+    @Test
+    void onFilterArticlesShowsErrorAndReturnsEmptyList() {
+        when(articleService.filterArticles(ArticleQuery.FilterColumn.PUBLISHED_AT, "bad"))
+                .thenThrow(new IllegalArgumentException("Publication date must use YYYY-MM-DD format"));
+
+        assertEquals(
+                List.of(),
+                presenter.onFilterArticles(ArticleQuery.FilterColumn.PUBLISHED_AT, "bad")
+        );
+        assertEquals(List.of("Publication date must use YYYY-MM-DD format"), view.errors);
+    }
+
+    @Test
     void onFilterArticlesReturnsServiceResult() {
         List<Article> articles = List.of(article());
         when(articleService.filterArticles(
