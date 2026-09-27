@@ -115,9 +115,6 @@ public class ConsoleView implements View {
         String content = getOptionalValidatedInput("Enter new content (if you want you can leave this empty - nothing will change):", inputValidationService::validateArticleContent);
         Article.Status status = getStatusInput("Enter new status (if you want you can leave this empty - nothing will change):");
 
-        System.out.println("----------");
-        System.out.println(title + " | " + content + " | " + status);
-
         if (title == null || content == null || status == null) {
             Article article = presenter.onGetArticleById(articleId);
 

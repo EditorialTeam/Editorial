@@ -225,7 +225,15 @@ public class JdbcArticleRepository implements ArticleRepository {
     @Override
     public List<Article> getArticles() {
         String sql = """
-                SELECT * FROM articles;
+                SELECT
+                    article.id,
+                    article.author_id,
+                    article.title,
+                    article.content,
+                    status.code AS status_code,
+                    article.published_at
+                FROM articles AS article
+                JOIN article_statuses AS status ON status.id = article.status_id
                 """;
 
         try (var connection = connectionFactory.openConnection();
@@ -233,10 +241,17 @@ public class JdbcArticleRepository implements ArticleRepository {
         ) {
 
             try (var resSet = statement.executeQuery()) {
-                List<Article> returnArticles = new ArrayList<Article>();
+                List<Article> returnArticles = new ArrayList<>();
 
                 while (resSet.next()) {
-                    returnArticles.add(getArticleById(resSet.getInt("id")));
+                    returnArticles.add(new Article(
+                            resSet.getInt("id"),
+                            resSet.getInt("author_id"),
+                            resSet.getString("title"),
+                            resSet.getString("content"),
+                            Article.Status.valueOf(resSet.getString("status_code")),
+                            resSet.getString("published_at")
+                    ));
                 }
 
                 return returnArticles;
