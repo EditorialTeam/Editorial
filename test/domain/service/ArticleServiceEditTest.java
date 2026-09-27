@@ -12,7 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -69,14 +72,30 @@ class ArticleServiceEditTest {
     }
 
     @Test
-    void editAllowsPublishedWhenDateIsPresent() {
-        Article article = new Article(1, 7, "Title", "Long enough", Article.Status.PENDING, "2026-09-26");
+    void editSetsPublicationTimeWhenStatusBecomesPublished() {
+        Article article = pendingArticle();
         when(userRepository.existsById(7)).thenReturn(true);
         when(articleRepository.getArticleById(1)).thenReturn(article);
+        Instant before = Instant.now();
 
         articleService.edit(1, "Title", "Long enough", Article.Status.PUBLISHED);
 
+        Instant publishedAt = Instant.parse(article.getPublishedAt());
         assertEquals(Article.Status.PUBLISHED, article.getStatus());
+        assertFalse(publishedAt.isBefore(before));
+        assertFalse(publishedAt.isAfter(Instant.now()));
+        verify(articleRepository).editArticle(article);
+    }
+
+    @Test
+    void editKeepsPublicationTimeWhenArticleStaysPublished() {
+        Article article = new Article(1, 7, "Title", "Long enough", Article.Status.PUBLISHED, "2026-09-26T12:00:00Z");
+        when(userRepository.existsById(7)).thenReturn(true);
+        when(articleRepository.getArticleById(1)).thenReturn(article);
+
+        articleService.edit(1, "New title", "Updated content", Article.Status.PUBLISHED);
+
+        assertEquals("2026-09-26T12:00:00Z", article.getPublishedAt());
         verify(articleRepository).editArticle(article);
     }
 
@@ -101,20 +120,6 @@ class ArticleServiceEditTest {
         );
 
         assertEquals("Status is required", error.getMessage());
-        verify(articleRepository, never()).editArticle(any());
-    }
-
-    @Test
-    void editRejectsPublishedArticleWithoutDate() {
-        when(userRepository.existsById(7)).thenReturn(true);
-        when(articleRepository.getArticleById(1)).thenReturn(pendingArticle());
-
-        IllegalArgumentException error = assertThrows(
-                IllegalArgumentException.class,
-                () -> articleService.edit(1, "Title", "Long enough", Article.Status.PUBLISHED)
-        );
-
-        assertEquals("Published article must have a publication date", error.getMessage());
         verify(articleRepository, never()).editArticle(any());
     }
 

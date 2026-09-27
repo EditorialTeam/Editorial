@@ -8,6 +8,7 @@ import domain.validator.ArticleValidator;
 import domain.validator.IdValidator;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.List;
 
 public class ArticleService {
@@ -41,10 +42,14 @@ public class ArticleService {
         idValidator.validate(articleId, "Article ID");
 
         Article article = articleRepository.getArticleById(articleId);
+        Article.Status previousStatus = article.getStatus();
 
         article.setTitle(title);
         article.setContent(content);
         article.setStatus(status);
+        if (status == Article.Status.PUBLISHED && previousStatus != Article.Status.PUBLISHED) {
+            article.setPublishedAt(Instant.now().toString());
+        }
 
         articleValidator.validate(article);
         articleRepository.editArticle(article);
