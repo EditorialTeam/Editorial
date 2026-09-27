@@ -8,6 +8,7 @@ import domain.service.ArticleService;
 import domain.service.StatisticsService;
 import domain.service.UserService;
 
+import java.io.File;
 import java.util.List;
 
 // Класс Presenter ("мозги" UI): связывает View и UseCase-ы бизнес-логики
@@ -176,7 +177,18 @@ public class Presenter {
     public void onExportArticles(String filePath) {
         try {
             articleService.exportToExcel(filePath);
-            view.showMessage("Articles exported successfully to " + filePath);
+            File file = new File(filePath.endsWith(".xlsx") ? filePath : filePath + ".xlsx");
+            view.showMessage("Articles exported successfully to " + file.getAbsolutePath());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+        }
+    }
+
+    public void onExportUsers(String filePath) {
+        try {
+            userService.exportToExcel(filePath);
+            File file = new File(filePath.endsWith(".xlsx") ? filePath : filePath + ".xlsx");
+            view.showMessage("Users exported successfully to " + file.getAbsolutePath());
         } catch (IllegalArgumentException | IllegalStateException e) {
             view.showError(e.getMessage());
         }

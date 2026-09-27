@@ -41,7 +41,7 @@ public class ConsoleView implements View {
                     case 1 -> showArticlesMenu();
                     case 2 -> showUsersMenu();
                     case 3 -> showStats();
-                    case 4 -> exportArticles();
+                    case 4 -> exportMenu();
                     case 0 -> {
                         showMessage("Exiting the application");
                         isRunning = false;
@@ -542,10 +542,47 @@ public class ConsoleView implements View {
         System.out.println("Articles rejected: " + statistics.getRejectedArticleCount());
     }
 
-    private void exportArticles(){
-        String path = getUserInput("Enter file path (e. g. articles.xlsx)").trim();
-        presenter.onExportArticles(path);
+    // Меню экспорта данных в Excel
+    private void exportMenu() {
+        boolean back = false;
+        while (!back) {
+            System.out.println("--- EXPORT DATA TO EXCEL ---");
+            System.out.println("1. Export articles");
+            System.out.println("2. Export users");
+            System.out.println("0. Back to main menu");
 
+            int command = getMenuChoice();
+            switch (command) {
+                case 1 -> exportArticles();
+                case 2 -> exportUsers();
+                case 0 -> back = true;
+                default -> showError("Unknown command!");
+            }
+        }
+    }
+
+    // Отдельный метод экспорта статей
+    private void exportArticles() {
+        String path = askFilePathWithDefault("articles.xlsx");
+        presenter.onExportArticles(path);
+    }
+
+    // Отдельный метод экспорта пользователей
+    private void exportUsers() {
+        String path = askFilePathWithDefault("users.xlsx");
+        presenter.onExportUsers(path);
+    }
+
+    // Умный запрос пути: если юзер жмет Enter, подставляется имя по умолчанию
+    private String askFilePathWithDefault(String defaultFileName) {
+        System.out.println("Enter file path or name (press Enter to save as '" + defaultFileName + "'):");
+        System.out.flush();
+        String input = scanner.nextLine().trim();
+
+        if (input.isEmpty()) {
+            return defaultFileName;
+        }
+        return input;
     }
 
 }
