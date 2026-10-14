@@ -10,6 +10,7 @@ import domain.service.UserService;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Supplier;
 
 // Класс Presenter ("мозги" UI): связывает View и UseCase-ы бизнес-логики
 public class Presenter {
@@ -30,46 +31,46 @@ public class Presenter {
         this.statisticsService = statisticsService;
     }
 
+    public void executePresenterAction(Runnable action, String successMessage) {
+        try {
+            action.run();
+            view.showMessage(successMessage);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+        }
+    }
+
+    public <T> T executePresenterAction(Supplier<T> action, T fallback) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.showError(e.getMessage());
+            return fallback;
+        }
+    }
+
     // Обработка добавления статьи
     public boolean onAddArticle(Article article) {
-        try {
+        return executePresenterAction(() -> {
             articleService.add(article);
             view.showMessage("Article added");
             return true;
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-            return false;
-        }
+        }, false);
     }
 
     // Обработка получения всех статей
     public List<Article> onGetArticles() {
-        try {
-            return articleService.getAll();
-        } catch (IllegalStateException e) {
-            view.showError(e.getMessage());
-            return List.of();
-        }
+        return executePresenterAction(articleService::getAll, List.of());
     }
 
     // Обработка удаления статьи по id
     public void onDeleteArticle(int articleId) {
-        try {
-            articleService.delete(articleId);
-            view.showMessage("Article deleted");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        executePresenterAction(() -> articleService.delete(articleId), "Article deleted");
     }
 
     // Обработка получения статьи по id
     public Article onGetArticleById(int articleId) {
-        try {
-            return articleService.getById(articleId);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-            return null;
-        }
+        return executePresenterAction((Supplier<Article>) () -> articleService.getById(articleId), null);
     }
 
     // Обработка фильтрации статей
@@ -77,52 +78,27 @@ public class Presenter {
             ArticleQuery.FilterColumn column,
             String value
     ) {
-        try {
-            return articleService.filterArticles(column, value);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-            return List.of();
-        }
+        return executePresenterAction(() -> articleService.filterArticles(column, value), List.of());
     }
 
     // Обработка сортировки статей
     public List<Article> onSortArticles(ArticleQuery.SortColumn col, ArticleQuery.SortDir dir) {
-       try {
-           return articleService.sortArticles(col, dir);
-       } catch(IllegalArgumentException | IllegalStateException e) {
-           view.showError(e.getMessage());
-           return List.of();
-       }
+        return executePresenterAction(() -> articleService.sortArticles(col, dir), List.of());
     }
 
     // Обработка поиска статей
     public List<Article> onSearchArticle(String keyword) {
-        try {
-            return articleService.search(keyword);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-            return List.of();
-        }
+        return executePresenterAction(() -> articleService.search(keyword), List.of());
     }
 
     // Обработка редактирования статьи по id
     public void onEditArticle(int articleId, String title, String content, Article.Status status) {
-        try {
-            articleService.edit(articleId, title, content, status);
-            view.showMessage("Article edited");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        executePresenterAction(() -> articleService.edit(articleId, title, content, status), "Article edited");
     }
 
     // Обработка добавления пользователя
     public void onAddUser(User user) {
-        try {
-            userService.add(user);
-            view.showMessage("User added");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        executePresenterAction(() -> userService.add(user), "User added");
     }
 
     // Обработка редактирования пользователя по id
@@ -133,69 +109,38 @@ public class Presenter {
             String passwordHash,
             User.Role role
     ) {
-        try {
-            userService.edit(userId, username, email, passwordHash, role);
-            view.showMessage("User edited");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        executePresenterAction(() -> userService.edit(userId, username, email, passwordHash, role), "User edited");
     }
 
     // Обработка удаления пользователя по id
     public void onDeleteUser(int userId) {
-        try {
-            userService.delete(userId);
-            view.showMessage("User deleted");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        executePresenterAction(() -> userService.delete(userId), "User deleted");
     }
 
     // Обработка получения пользователя по id
     public User onGetUserById(int userId) {
-        try {
-            return userService.getById(userId);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-            return null;
-        }
+        return executePresenterAction((Supplier<User>) () -> userService.getById(userId), null);
     }
 
     public List<User> onGetUsers() {
-        try {
-            return userService.getAll();
-        } catch (IllegalStateException e) {
-            view.showError(e.getMessage());
-            return List.of();
-        }
+        return executePresenterAction(userService::getAll, List.of());
     }
 
     public EditorialStatistics onGetStatistics() {
-        try {
-            return statisticsService.getStatistics();
-        } catch (IllegalStateException e) {
-            view.showError(e.getMessage());
-            return EditorialStatistics.empty();
-        }
+        return executePresenterAction(statisticsService::getStatistics, EditorialStatistics.empty());
     }
 
     public void onExportArticles(String filePath) {
-        try {
+        executePresenterAction(() -> {
             articleService.exportToExcel(filePath);
             File file = new File(filePath.endsWith(".xlsx") ? filePath : filePath + ".xlsx");
-            view.showMessage("Articles exported successfully to " + file.getAbsolutePath());
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        }, "Articles exported successfully to " + filePath);
     }
 
     public void onExportUsers(String filePath) {
-        try {
+        executePresenterAction(() -> {
             userService.exportToExcel(filePath);
             File file = new File(filePath.endsWith(".xlsx") ? filePath : filePath + ".xlsx");
-            view.showMessage("Users exported successfully to " + file.getAbsolutePath());
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
-        }
+        }, "Users exported successfully to " + filePath);
     }
 }
