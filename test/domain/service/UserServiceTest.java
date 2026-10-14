@@ -1,6 +1,7 @@
 package domain.service;
 
 import domain.model.User;
+import domain.repository.UserExporter;
 import domain.repository.UserRepository;
 import domain.validator.IdValidator;
 import domain.validator.UserValidator;
@@ -24,12 +25,14 @@ import static org.mockito.Mockito.when;
 class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserExporter userExporter;
 
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, new UserValidator(), new IdValidator());
+        userService = new UserService(userRepository, userExporter, new UserValidator(), new IdValidator());
     }
 
     @Test
