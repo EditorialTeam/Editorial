@@ -65,7 +65,7 @@ public class Presenter {
 
     // Обработка удаления статьи по id
     public void onDeleteArticle(int articleId) {
-        executePresenterAction(() -> userService.delete(articleId), "Article deleted");
+        executePresenterAction(() -> articleService.delete(articleId), "Article deleted");
     }
 
     // Обработка получения статьи по id
