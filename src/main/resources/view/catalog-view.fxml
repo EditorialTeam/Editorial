@@ -1,160 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="presentation.controller.CatalogController"
-      spacing="0" VBox.vgrow="ALWAYS" style="-fx-background-color: #faf8ff;">
-
-    <!-- Command & Filter Bar -->
-    <VBox styleClass="command-bar" spacing="10">
-        <!-- Row 1: Search & Dropdowns -->
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <HBox alignment="CENTER_LEFT" spacing="6" HBox.hgrow="ALWAYS" maxWidth="480"
-                  style="-fx-background-color: #f2f3ff; -fx-padding: 4 8; -fx-background-radius: 4; -fx-border-color: #e2e8f0; -fx-border-radius: 4;">
-                <Label text="🔍" style="-fx-font-size: 12px;"/>
-                <TextField fx:id="searchInput" promptText="Поиск по названию, лиду или DOI..."
-                           style="-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 2;" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <ComboBox fx:id="authorFilterCombo" prefWidth="170" promptText="Все авторы"/>
-            <ComboBox fx:id="statusFilterCombo" prefWidth="160" promptText="Все статусы"/>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <!-- Sorting & View Switcher -->
-            <HBox spacing="8" alignment="CENTER_RIGHT">
-                <Label text="СОРТИРОВКА:" styleClass="font-label-sm"/>
-                <ComboBox fx:id="sortCombo" prefWidth="170"/>
-
-                <HBox spacing="2" style="-fx-background-color: #f2f3ff; -fx-padding: 2; -fx-background-radius: 4;">
-                    <Button fx:id="gridViewBtn" text="⊞ Сетка" styleClass="btn-primary" style="-fx-padding: 4 8; -fx-font-size: 11px;"/>
-                    <Button fx:id="tableViewBtn" text="≡ Таблица" styleClass="btn-ghost" style="-fx-padding: 4 8; -fx-font-size: 11px;"/>
-                </HBox>
-            </HBox>
-        </HBox>
-
-        <!-- Row 2: Category Chips & Live Counter -->
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <Button fx:id="chipAll" text="Все разделы" styleClass="category-chip, category-chip-active"/>
-            <Button fx:id="chipCulture" text="Культура" styleClass="category-chip"/>
-            <Button fx:id="chipScience" text="Наука" styleClass="category-chip"/>
-            <Button fx:id="chipTech" text="Технологии" styleClass="category-chip"/>
-            <Button fx:id="chipEconomy" text="Экономика" styleClass="category-chip"/>
-
-            <Region HBox.hgrow="ALWAYS"/>
-            <HBox spacing="6" alignment="CENTER_RIGHT">
-                <Label text="●" style="-fx-text-fill: #1e3a8a; -fx-font-size: 10px;"/>
-                <Label fx:id="archiveStatusLabel" text="Архив обновлен" styleClass="font-mono-sm"/>
-            </HBox>
-        </HBox>
-    </VBox>
-
-    <!-- Main Catalog Workspace with Right Companion Panel -->
-    <HBox spacing="20" VBox.vgrow="ALWAYS">
-        <padding>
-            <Insets top="16" right="20" bottom="16" left="20"/>
-        </padding>
-
-        <!-- Left Scrollable Catalog Stream -->
-        <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;">
-            <VBox spacing="16">
-                <!-- Bento Lead Feature Slot -->
-                <VBox fx:id="bentoSlot" styleClass="bento-lead-card" spacing="12">
-                    <HBox alignment="CENTER_LEFT" spacing="8">
-                        <Label text="ГЛАВНАЯ ТЕМА НОМЕРА" style="-fx-background-color: #b02d29; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 4;"/>
-                        <Label fx:id="bentoBadge" text="Опубликовано" styleClass="status-badge, badge-published"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Label text="Выпуск #12" styleClass="font-mono-sm"/>
-                    </HBox>
-
-                    <Label fx:id="bentoTitle" text="Заголовок главной статьи выпуска" styleClass="font-headline-lg" wrapText="true"/>
-                    <Label fx:id="bentoExcerpt" text="Развернутый анонс и лид ключевого исследования..." styleClass="font-body-md" wrapText="true"/>
-
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label text="👤" style="-fx-font-size: 14px;"/>
-                            <Label fx:id="bentoAuthor" text="Имя Автора" styleClass="font-title-sm"/>
-                            <Label text="•" styleClass="font-mono-sm"/>
-                            <Label fx:id="bentoDate" text="2024-11-20" styleClass="font-mono-sm"/>
-                        </HBox>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="bentoReadBtn" text="Читать публикацию →" styleClass="btn-primary"/>
-                    </HBox>
-                </VBox>
-
-                <!-- Responsive Cards Grid -->
-                <FlowPane fx:id="articlesGrid" hgap="16" vgap="16" prefWrapLength="720"/>
-
-                <!-- Pagination Footer -->
-                <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: #ffffff; -fx-padding: 12 16; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;">
-                    <Label fx:id="paginationLabel" text="Показано публикаций" styleClass="font-body-sm"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Label text="Страница 1" styleClass="font-title-sm"/>
-                </HBox>
-            </VBox>
-        </ScrollPane>
-
-        <!-- Right Companion Panel (300px) -->
-        <VBox prefWidth="300" minWidth="280" maxWidth="320" spacing="16">
-            <!-- Popular Widget -->
-            <VBox styleClass="article-card" spacing="10">
-                <HBox alignment="CENTER_LEFT" spacing="6">
-                    <Label text="🔥" style="-fx-font-size: 14px;"/>
-                    <Label text="Популярное за 7 дней" styleClass="font-title-sm"/>
-                </HBox>
-                <Separator/>
-                <VBox spacing="8">
-                    <VBox spacing="2">
-                        <Label text="01. Реактор на бегущей волне: замкнутый цикл" styleClass="font-body-sm" wrapText="true" style="-fx-font-weight: bold;"/>
-                        <Label text="Наука • 5.8k просмотров" styleClass="font-mono-sm"/>
-                    </VBox>
-                    <Separator style="-fx-opacity: 0.5;"/>
-                    <VBox spacing="2">
-                        <Label text="02. Герменевтика русского модернизма" styleClass="font-body-sm" wrapText="true" style="-fx-font-weight: bold;"/>
-                        <Label text="Культура • 4.3k просмотров" styleClass="font-mono-sm"/>
-                    </VBox>
-                    <Separator style="-fx-opacity: 0.5;"/>
-                    <VBox spacing="2">
-                        <Label text="03. Автономные транспортные системы" styleClass="font-body-sm" wrapText="true" style="-fx-font-weight: bold;"/>
-                        <Label text="Технологии • 3.9k просмотров" styleClass="font-mono-sm"/>
-                    </VBox>
-                </VBox>
-            </VBox>
-
-            <!-- Subject Tags -->
-            <VBox styleClass="article-card" spacing="10">
-                <Label text="Тематический указатель" styleClass="font-title-sm"/>
-                <FlowPane hgap="6" vgap="6">
-                    <Label text="#архивистика" styleClass="kbd-badge"/>
-                    <Label text="#квантовая_физика" styleClass="kbd-badge"/>
-                    <Label text="#нейробиология" styleClass="kbd-badge"/>
-                    <Label text="#урбанистика" styleClass="kbd-badge"/>
-                    <Label text="#монетарная_политика" styleClass="kbd-badge"/>
-                    <Label text="#типографика" styleClass="kbd-badge"/>
-                </FlowPane>
-            </VBox>
-
-            <!-- Keyboard Shortcuts -->
-            <VBox styleClass="article-card" spacing="8" style="-fx-background-color: #f2f3ff;">
-                <HBox alignment="CENTER_LEFT" spacing="6">
-                    <Label text="⌨" style="-fx-font-size: 14px;"/>
-                    <Label text="Горячие клавиши" styleClass="font-title-sm"/>
-                </HBox>
-                <HBox alignment="CENTER_LEFT">
-                    <Label text="Создать статью" styleClass="font-body-sm"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Label text="Ctrl+N" styleClass="kbd-badge"/>
-                </HBox>
-                <HBox alignment="CENTER_LEFT">
-                    <Label text="Экспорт в Excel" styleClass="font-body-sm"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Label text="Ctrl+E" styleClass="kbd-badge"/>
-                </HBox>
-            </VBox>
-        </VBox>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.CatalogController" styleClass="workspace" spacing="16">
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Каталог статей" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="gridViewBtn" text="Обновить"/>
+        <Button fx:id="tableViewBtn" text="Таблицей"/>
     </HBox>
-
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchInput" promptText="Название, текст или ID" HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="authorFilterCombo" prefWidth="190" promptText="Все авторы"/>
+        <ComboBox fx:id="statusFilterCombo" prefWidth="195" promptText="Все статусы"/>
+        <ComboBox fx:id="sortCombo" prefWidth="170"/>
+        <Button fx:id="resetFiltersBtn" text="Сбросить"/>
+    </HBox>
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="articlesGrid" hgap="16" vgap="16" prefWrapLength="1100"/>
+    </ScrollPane>
+    <HBox alignment="CENTER_LEFT">
+        <Label fx:id="countLabel" text="" styleClass="muted"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="archiveStatusLabel" text="" styleClass="muted"/>
+    </HBox>
 </VBox>

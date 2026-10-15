@@ -1,56 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="presentation.controller.dialog.ArticleDialogController"
-      styleClass="dialog-container" prefWidth="640" spacing="0">
-
-    <!-- Dialog Header -->
-    <HBox styleClass="dialog-header" alignment="CENTER_LEFT">
-        <Label fx:id="dialogTitleLabel" text="Новая публикация" styleClass="font-headline-sm"/>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.dialog.ArticleDialogController" styleClass="dialog-container" prefWidth="640" spacing="0">
+    <HBox styleClass="dialog-header">
+        <Label fx:id="dialogTitleLabel" text="Новая статья" styleClass="section-title"/>
     </HBox>
-
-    <!-- Dialog Body / Form -->
-    <VBox spacing="14" style="-fx-padding: 20;">
-        <!-- Error Alert Banner -->
-        <Label fx:id="errorLabel" text="Сообщение об ошибке" visible="false" managed="false"
-               style="-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-border-color: #fecaca; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 8 12; -fx-font-size: 12px;"
-               maxWidth="Infinity" wrapText="true"/>
-
-        <!-- Title -->
-        <VBox spacing="4">
-            <Label text="Заголовок публикации *" styleClass="font-label-md"/>
-            <TextField fx:id="titleField" promptText="Введите содержательный заголовок статьи..."/>
-        </VBox>
-
-        <!-- Author and Status (Two columns) -->
-        <HBox spacing="14">
-            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label text="Автор публикации (Внешний ключ) *" styleClass="font-label-md"/>
-                <ComboBox fx:id="authorComboBox" maxWidth="Infinity" promptText="Выберите автора из списка..."/>
+    <VBox spacing="16" styleClass="dialog-body">
+        <Label fx:id="errorLabel" visible="false" managed="false" styleClass="error-message" wrapText="true" maxWidth="Infinity"/>
+        <VBox spacing="6"><Label text="Заголовок"/><TextField fx:id="titleField"/></VBox>
+        <HBox spacing="16">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Автор"/>
+                <ComboBox fx:id="authorComboBox" maxWidth="Infinity" promptText="Выберите автора"/>
             </VBox>
-
-            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label text="Статус публикации *" styleClass="font-label-md"/>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Статус"/>
                 <ComboBox fx:id="statusComboBox" maxWidth="Infinity"/>
             </VBox>
         </HBox>
-
-        <!-- Content -->
-        <VBox spacing="4" VBox.vgrow="ALWAYS">
-            <Label text="Текст публикации *" styleClass="font-label-md"/>
-            <TextArea fx:id="contentArea" promptText="Введите текст статьи или научного исследования..."
-                      prefRowCount="9" wrapText="true"/>
+        <VBox spacing="6">
+            <Label text="Текст статьи"/>
+            <TextArea fx:id="contentArea" prefRowCount="12" wrapText="true"/>
         </VBox>
     </VBox>
-
-    <!-- Dialog Footer -->
-    <HBox styleClass="dialog-footer" spacing="10">
-        <Button fx:id="cancelButton" text="Отмена" styleClass="btn-secondary" onAction="#onCancel"/>
-        <Button fx:id="saveButton" text="Сохранить публикацию" styleClass="btn-primary" onAction="#onSave"/>
+    <HBox styleClass="dialog-footer" spacing="8">
+        <Button fx:id="cancelButton" text="Отмена" onAction="#onCancel"/>
+        <Button fx:id="saveButton" text="Сохранить" styleClass="btn-primary" onAction="#onSave"/>
     </HBox>
-
 </VBox>

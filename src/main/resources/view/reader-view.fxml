@@ -1,127 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="presentation.controller.ReaderController"
-      spacing="0" VBox.vgrow="ALWAYS" style="-fx-background-color: #faf8ff;">
-
-    <!-- Sticky Reading Action Dock -->
-    <HBox styleClass="header-ribbon" alignment="CENTER_LEFT" spacing="12">
-        <Button fx:id="backBtn" text="← Назад в каталог" styleClass="btn-secondary"/>
-
-        <Label text="/" styleClass="font-mono-sm"/>
-        <Label text="Выпуск №12 • Научный альманах" styleClass="font-body-sm"/>
-
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.ReaderController" spacing="16" styleClass="workspace">
+    <HBox alignment="CENTER_LEFT" spacing="8">
+        <Button fx:id="backBtn" text="В каталог"/>
         <Region HBox.hgrow="ALWAYS"/>
-
-        <!-- Reading Utility Controls -->
-        <HBox spacing="4" alignment="CENTER" style="-fx-background-color: #f2f3ff; -fx-padding: 3 6; -fx-background-radius: 4;">
-            <Button fx:id="fontDecBtn" text="А-" styleClass="btn-ghost" style="-fx-padding: 2 6; -fx-font-weight: bold;"/>
-            <Label fx:id="fontIndicator" text="100%" styleClass="font-mono-sm" style="-fx-padding: 0 4;"/>
-            <Button fx:id="fontIncBtn" text="А+" styleClass="btn-ghost" style="-fx-padding: 2 6; -fx-font-weight: bold;"/>
-        </HBox>
-
-        <Button fx:id="bookmarkBtn" text="☆ В закладки" styleClass="btn-secondary"/>
-        <Button fx:id="exportBtn" text="⬇ Экспорт в Excel" styleClass="btn-secondary"/>
-        <Button fx:id="editBtn" text="✎ Редактировать" styleClass="btn-primary"/>
+        <Button fx:id="fontDecBtn" text="А−"/>
+        <Label fx:id="fontIndicator"/>
+        <Button fx:id="fontIncBtn" text="А+"/>
+        <Button fx:id="editBtn" text="Редактировать"/>
     </HBox>
-
-    <!-- Scrollable Reading Workspace -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
         <VBox alignment="TOP_CENTER">
-            <padding>
-                <Insets top="24" right="32" bottom="40" left="32"/>
-            </padding>
-
-            <!-- Main Reading Canvas (Tier 2) -->
-            <VBox styleClass="reader-canvas" spacing="20">
-                <!-- Academic Header Pill & DOI -->
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label fx:id="statusPill" text="Опубликовано" styleClass="status-badge, badge-published"/>
-                    <Label text="•" styleClass="font-mono-sm"/>
-                    <Label fx:id="doiLabel" text="DOI: 10.24412/vestnik.2024.12.04" styleClass="font-mono-sm"/>
+            <VBox styleClass="reader-canvas" spacing="20" maxWidth="860">
+                <HBox spacing="16" alignment="CENTER_LEFT">
+                    <Label fx:id="articleIdLabel" styleClass="muted"/>
+                    <Label fx:id="statusPill" styleClass="status-badge"/>
                 </HBox>
-
-                <!-- Headline -->
-                <Label fx:id="titleLabel" text="Заголовок публикации" styleClass="font-headline-xl" wrapText="true"/>
-
-                <!-- Lead -->
-                <Label fx:id="leadLabel" text="Академический лид публикации..." styleClass="font-headline-md" wrapText="true"
-                       style="-fx-font-style: italic; -fx-text-fill: #444651;"/>
-
-                <!-- Author & Editorial Metadata Strip -->
-                <HBox styleClass="reader-meta-strip" alignment="CENTER_LEFT" spacing="16">
-                    <Label fx:id="authorAvatar" text="АД"
-                           style="-fx-background-color: #1e3a8a; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8; -fx-background-radius: 20; -fx-min-width: 40; -fx-alignment: center; -fx-font-size: 14px;"/>
-                    <VBox spacing="2">
-                        <Label fx:id="authorName" text="Имя Автора" styleClass="font-title-md"/>
-                        <Label text="Автор публикации • Редакция Вестник" styleClass="font-body-sm"/>
-                    </VBox>
-
-                    <Region HBox.hgrow="ALWAYS"/>
-
-                    <HBox spacing="16" alignment="CENTER_RIGHT">
-                        <HBox spacing="6" alignment="CENTER">
-                            <Label text="📅" style="-fx-font-size: 12px;"/>
-                            <Label fx:id="dateLabel" text="2024-11-20" styleClass="font-mono-sm"/>
-                        </HBox>
-                        <HBox spacing="6" alignment="CENTER">
-                            <Label text="⏱" style="-fx-font-size: 12px;"/>
-                            <Label fx:id="readTimeLabel" text="12 мин чтения" styleClass="font-mono-sm"/>
-                        </HBox>
-                    </HBox>
+                <Label fx:id="titleLabel" styleClass="page-title" wrapText="true" maxWidth="780"/>
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label fx:id="authorName" styleClass="muted"/>
+                    <Label fx:id="dateLabel" styleClass="muted"/>
                 </HBox>
-
                 <Separator/>
-
-                <!-- Text Body with Dropcap -->
-                <VBox spacing="16">
-                    <HBox spacing="10" alignment="TOP_LEFT">
-                        <Label fx:id="dropcapLetter" text="В" styleClass="reader-dropcap"/>
-                        <Label fx:id="firstParagraphText" text="Текст первого абзаца статьи..." styleClass="font-body-lg" wrapText="true" HBox.hgrow="ALWAYS"/>
-                    </HBox>
-
-                    <!-- Pull Quote Accent -->
-                    <VBox styleClass="reader-pullquote" spacing="4">
-                        <Label text="«Слово живо не тем, что оно называет впрямую, а той тенью, которую оно отбрасывает...»"
-                               styleClass="font-headline-sm" style="-fx-font-style: italic; -fx-text-fill: #1e3a8a;" wrapText="true"/>
-                        <Label text="— Из редакционного манифеста альманаха" styleClass="font-label-sm"/>
-                    </VBox>
-
-                    <Label fx:id="mainBodyText" text="Основной текст статьи..." styleClass="font-body-lg" wrapText="true"/>
-                </VBox>
-
-                <Separator/>
-
-                <!-- Editorial Discussion & Reviews Section -->
-                <VBox spacing="16" style="-fx-padding: 10 0 0 0;">
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="💬" style="-fx-font-size: 16px;"/>
-                        <Label text="Экспертные отзывы и замечания редактора" styleClass="font-headline-md"/>
-                    </HBox>
-
-                    <!-- Comment Input Box -->
-                    <VBox spacing="8" style="-fx-background-color: #f2f3ff; -fx-padding: 12; -fx-background-radius: 8;">
-                        <TextArea fx:id="commentInput" promptText="Оставьте содержательный комментарий или редакционную пометку к статье..."
-                                  prefRowCount="3" wrapText="true"/>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button fx:id="sendCommentBtn" text="Отправить отзыв ➔" styleClass="btn-primary"/>
-                        </HBox>
-                    </VBox>
-
-                    <!-- Comments List -->
-                    <VBox fx:id="commentsContainer" spacing="10">
-                        <VBox styleClass="reader-meta-strip" spacing="4">
-                            <Label text="Д-р Елена Родионова (Рецензент)" styleClass="font-title-sm"/>
-                            <Label text="Блестящий филологический разбор! Синкопированный ритм текста и контекст эпохи переданы точно." styleClass="font-body-md" wrapText="true"/>
-                        </VBox>
-                    </VBox>
-                </VBox>
+                <Label fx:id="bodyText" wrapText="true" maxWidth="780" styleClass="article-body"/>
             </VBox>
         </VBox>
     </ScrollPane>
-
 </VBox>

@@ -1,48 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="presentation.controller.ArticleCardController"
-      fx:id="cardRoot" styleClass="article-card" spacing="10"
-      prefWidth="320" maxWidth="360" minHeight="240">
-
-    <!-- Top Badge & Bookmark -->
-    <HBox alignment="CENTER_LEFT" spacing="8">
-        <Label fx:id="statusBadge" text="Опубликовано" styleClass="status-badge, badge-published"/>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.ArticleCardController" styleClass="article-card" spacing="12" prefWidth="350" minHeight="240">
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label fx:id="articleIdLabel" styleClass="muted"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="bookmarkBtn" text="☆" styleClass="btn-ghost" style="-fx-font-size: 14px; -fx-padding: 2 6;"/>
+        <Label fx:id="statusBadge" styleClass="status-badge"/>
     </HBox>
-
-    <!-- DOI -->
-    <Label fx:id="doiLabel" text="DOI: 10.24412/vestnik.2024.1" styleClass="font-mono-sm"/>
-
-    <!-- Title -->
-    <Label fx:id="titleLabel" text="Заголовок публикации" styleClass="font-headline-sm" wrapText="true" maxHeight="60"/>
-
-    <!-- Excerpt / Lead -->
-    <Label fx:id="excerptLabel" text="Краткое содержание или лид статьи..." styleClass="font-body-sm" wrapText="true" VBox.vgrow="ALWAYS"/>
-
-    <!-- Divider -->
-    <Separator style="-fx-opacity: 0.5;"/>
-
-    <!-- Author & Metadata Strip -->
-    <HBox alignment="CENTER_LEFT" spacing="8">
-        <Label fx:id="authorAvatarLabel" text="АД"
-               style="-fx-background-color: #e2e7ff; -fx-text-fill: #1e3a8a; -fx-font-weight: bold; -fx-padding: 4; -fx-background-radius: 12; -fx-min-width: 24; -fx-alignment: center; -fx-font-size: 10px;"/>
-        <VBox spacing="1" HBox.hgrow="ALWAYS">
-            <Label fx:id="authorNameLabel" text="Имя Автора" styleClass="font-label-md"/>
-            <Label fx:id="dateLabel" text="2024-11-20" styleClass="font-mono-sm"/>
-        </VBox>
-    </HBox>
-
-    <!-- Actions -->
-    <HBox spacing="8" alignment="CENTER_RIGHT">
-        <Button fx:id="readBtn" text="Читать" styleClass="btn-primary"/>
-        <Button fx:id="editBtn" text="Правка" styleClass="btn-secondary"/>
+    <Label fx:id="titleLabel" styleClass="section-title" wrapText="true" maxWidth="320"/>
+    <Label fx:id="excerptLabel" wrapText="true" maxWidth="320" VBox.vgrow="ALWAYS"/>
+    <VBox spacing="4">
+        <Label fx:id="authorNameLabel" styleClass="muted"/>
+        <Label fx:id="dateLabel" styleClass="muted"/>
+    </VBox>
+    <HBox spacing="8">
+        <Button fx:id="readBtn" text="Читать"/>
+        <Button fx:id="editBtn" text="Изменить"/>
+        <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="deleteBtn" text="Удалить" styleClass="btn-destructive"/>
     </HBox>
-
 </VBox>

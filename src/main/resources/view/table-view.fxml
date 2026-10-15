@@ -1,69 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="presentation.controller.ArticleTableController"
-      spacing="16" VBox.vgrow="ALWAYS" style="-fx-background-color: #faf8ff;">
-    <padding>
-        <Insets top="16" right="20" bottom="16" left="20"/>
-    </padding>
-
-    <!-- Top Command & Filter Strip -->
-    <VBox styleClass="article-card" spacing="12">
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <!-- Search -->
-            <HBox alignment="CENTER_LEFT" spacing="6" HBox.hgrow="ALWAYS" maxWidth="400"
-                  style="-fx-background-color: #f2f3ff; -fx-padding: 4 8; -fx-background-radius: 4; -fx-border-color: #e2e8f0; -fx-border-radius: 4;">
-                <Label text="🔍" style="-fx-font-size: 12px;"/>
-                <TextField fx:id="searchField" promptText="Поиск по названию, тексту или ID..."
-                           style="-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 2;" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <!-- Independent Filters -->
-            <Label text="Статус:" styleClass="font-label-sm"/>
-            <ComboBox fx:id="statusFilterCombo" prefWidth="160"/>
-
-            <Label text="Автор:" styleClass="font-label-sm"/>
-            <ComboBox fx:id="authorFilterCombo" prefWidth="170"/>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <!-- Grid Switcher -->
-            <Button fx:id="gridViewBtn" text="⊞ В режим сетки" styleClass="btn-secondary"/>
-        </HBox>
-
-        <Separator/>
-
-        <!-- Action Toolbar -->
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Button fx:id="addBtn" text="+ Новая статья" styleClass="btn-primary"/>
-            <Button fx:id="editBtn" text="✎ Редактировать" styleClass="btn-secondary"/>
-            <Button fx:id="deleteBtn" text="✕ Удалить" styleClass="btn-destructive"/>
-            <Button fx:id="exportBtn" text="⬇ Экспорт в Excel (.xlsx)" styleClass="btn-secondary"/>
-
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="countLabel" text="Всего записей: 0" styleClass="font-mono-sm"/>
-        </HBox>
-    </VBox>
-
-    <!-- TableView (Tier 2) -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.ArticleTableController" spacing="16" styleClass="workspace">
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Статьи" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="gridViewBtn" text="Карточками"/>
+    </HBox>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="Название, текст или ID" HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="statusFilterCombo" prefWidth="195" promptText="Все статусы"/>
+        <ComboBox fx:id="authorFilterCombo" prefWidth="190" promptText="Все авторы"/>
+    </HBox>
+    <HBox spacing="8" alignment="CENTER_LEFT">
+        <Button fx:id="addBtn" text="Добавить" styleClass="btn-primary"/>
+        <Button fx:id="editBtn" text="Изменить"/>
+        <Button fx:id="deleteBtn" text="Удалить" styleClass="btn-destructive"/>
+        <Button fx:id="exportBtn" text="Экспорт в Excel"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" styleClass="muted"/>
+    </HBox>
     <TableView fx:id="articleTable" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="idColumn" text="DOI / Номер" prefWidth="180"/>
-            <TableColumn fx:id="titleColumn" text="Заголовок публикации" prefWidth="380"/>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
+            <TableColumn fx:id="titleColumn" text="Заголовок" prefWidth="380"/>
             <TableColumn fx:id="authorColumn" text="Автор" prefWidth="180"/>
-            <TableColumn fx:id="statusColumn" text="Статус" prefWidth="160"/>
-            <TableColumn fx:id="dateColumn" text="Дата публикации" prefWidth="180"/>
+            <TableColumn fx:id="statusColumn" text="Статус" prefWidth="195"/>
+            <TableColumn fx:id="dateColumn" text="Дата публикации" prefWidth="160"/>
         </columns>
-        <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-        </columnResizePolicy>
-        <placeholder>
-            <Label text="Публикации не найдены. Создайте первую статью с помощью кнопки выше." styleClass="font-body-md"/>
-        </placeholder>
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+        <placeholder><Label text="Статьи не найдены"/></placeholder>
     </TableView>
-
 </VBox>

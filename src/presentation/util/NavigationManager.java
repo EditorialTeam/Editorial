@@ -264,7 +264,7 @@ public class NavigationManager {
             ArticleDialogController controller = loader.getController();
 
             Stage dialogStage = new Stage();
-            dialogStage.setTitle(article == null ? "Новая статья — Редакция Вестник" : "Редактирование статьи — Редакция Вестник");
+            dialogStage.setTitle(article == null ? "Новая статья" : "Редактирование статьи");
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(primaryStage);
 
