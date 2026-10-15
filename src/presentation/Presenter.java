@@ -9,6 +9,7 @@ import domain.service.StatisticsService;
 import domain.service.UserService;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class Presenter {
     private final ArticleService articleService;
