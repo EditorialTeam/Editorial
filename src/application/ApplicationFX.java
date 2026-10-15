@@ -17,12 +17,17 @@ import domain.service.UserService;
 import domain.validator.ArticleValidator;
 import domain.validator.IdValidator;
 import domain.validator.UserValidator;
-import presentation.ConsoleView;
 import presentation.Presenter;
 import presentation.validation.InputValidationService;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Application {
+public class ApplicationFX extends Application {
     public static void main(String[] args) {
+        launch(args);
+    }
+
+    public void start(Stage primaryStage) {
         // Подключение штук для БД
         DatabaseConfig config = new DatabaseConfig();
         DatabaseMigrator migrator = new DatabaseMigrator(config);
@@ -55,18 +60,14 @@ public class Application {
         UserService userService = new UserService(userRepository, userExporter, userValidator, idValidator);
         StatisticsService statisticsService = new StatisticsService(articleRepository, userRepository);
 
-        // UI
-        ConsoleView view = new ConsoleView(inputValidationService); // Ввод вывод текста в консоль
+        // UI// Ввод вывод текста в консоль
         Presenter presenter = new Presenter( // Обработка текста
-                view,
                 articleService,
                 userService,
                 statisticsService
         );
-        view.setPresenter(presenter);
 
         // Запуск системы
         migrator.migrate();
-        view.run();
     }
 }

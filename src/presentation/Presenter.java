@@ -14,18 +14,15 @@ import java.util.function.Supplier;
 
 // Класс Presenter ("мозги" UI): связывает View и UseCase-ы бизнес-логики
 public class Presenter {
-    private final View view;
     private final ArticleService articleService;
     private final UserService userService;
     private final StatisticsService statisticsService;
 
     public Presenter(
-            View view,
             ArticleService articleService,
             UserService userService,
             StatisticsService statisticsService
     ) {
-        this.view = view;
         this.articleService = articleService;
         this.userService = userService;
         this.statisticsService = statisticsService;
@@ -33,10 +30,8 @@ public class Presenter {
 
     public void executePresenterAction(Runnable action, String successMessage) {
         try {
-            action.run();
-            view.showMessage(successMessage);
+            action.run();;
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
         }
     }
 
@@ -44,7 +39,6 @@ public class Presenter {
         try {
             return action.get();
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.showError(e.getMessage());
             return fallback;
         }
     }
@@ -53,7 +47,6 @@ public class Presenter {
     public boolean onAddArticle(Article article) {
         return executePresenterAction(() -> {
             articleService.add(article);
-            view.showMessage("Article added");
             return true;
         }, false);
     }
