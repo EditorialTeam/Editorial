@@ -39,7 +39,7 @@ class PresenterTest {
 
     @BeforeEach
     void setUp() {
-        presenter = new Presenter(articleService, userService, statisticsService);
+        presenter = new Presenter(view, articleService, userService, statisticsService);
     }
 
     @Test
