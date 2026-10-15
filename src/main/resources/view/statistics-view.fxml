@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="presentation.controller.StatisticsController"
+      spacing="16" VBox.vgrow="ALWAYS" style="-fx-background-color: #faf8ff;">
+    <padding>
+        <Insets top="20" right="24" bottom="20" left="24"/>
+    </padding>
+
+    <!-- Header & Actions -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="2">
+            <Label text="Аналитика и статистика редакции" styleClass="font-headline-lg"/>
+            <Label text="Ключевые показатели публикационной активности и статусов (Контрольная работа № 2)" styleClass="font-body-sm"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshBtn" text="↻ Обновить метрики" styleClass="btn-secondary"/>
+        <Button fx:id="backToCatalogBtn" text="← В каталог" styleClass="btn-primary"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+        <VBox spacing="20">
+            <!-- 6 KPI Metric Cards Grid -->
+            <GridPane hgap="16" vgap="16">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33.3"/>
+                    <ColumnConstraints percentWidth="33.3"/>
+                    <ColumnConstraints percentWidth="33.3"/>
+                </columnConstraints>
+
+                <!-- Metric 1: Total Articles -->
+                <VBox styleClass="kpi-card" spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="ВСЕГО ПУБЛИКАЦИЙ" styleClass="kpi-card-title"/>
+                    <Label fx:id="totalArticlesLabel" text="0" styleClass="kpi-card-value"/>
+                    <Label text="Общий объем архива журнала" styleClass="font-mono-sm"/>
+                </VBox>
+
+                <!-- Metric 2: Total Users -->
+                <VBox styleClass="kpi-card" spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="ЗАРЕГИСТРИРОВАНО АВТОРОВ" styleClass="kpi-card-title"/>
+                    <Label fx:id="totalUsersLabel" text="0" styleClass="kpi-card-value"/>
+                    <Label text="Количество учетных записей авторов и редакторов" styleClass="font-mono-sm"/>
+                </VBox>
+
+                <!-- Metric 3: Published Articles -->
+                <VBox styleClass="kpi-card" spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <Label text="ОПУБЛИКОВАНО" styleClass="kpi-card-title"/>
+                    <Label fx:id="publishedCountLabel" text="0" styleClass="kpi-card-value" style="-fx-text-fill: #059669;"/>
+                    <Label fx:id="publishedPercentLabel" text="0.0% от общего числа" styleClass="font-mono-sm"/>
+                </VBox>
+
+                <!-- Metric 4: Moderating Articles -->
+                <VBox styleClass="kpi-card" spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="НА РЕДАКТУРЕ И РЕЦЕНЗИРОВАНИИ" styleClass="kpi-card-title"/>
+                    <Label fx:id="moderatingCountLabel" text="0" styleClass="kpi-card-value" style="-fx-text-fill: #2563eb;"/>
+                    <Label text="В процессе экспертной оценки" styleClass="font-mono-sm"/>
+                </VBox>
+
+                <!-- Metric 5: Pending Articles -->
+                <VBox styleClass="kpi-card" spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="ОЖИДАЕТ РАССМОТРЕНИЯ" styleClass="kpi-card-title"/>
+                    <Label fx:id="pendingCountLabel" text="0" styleClass="kpi-card-value" style="-fx-text-fill: #d97706;"/>
+                    <Label text="Поступившие новые рукописи" styleClass="font-mono-sm"/>
+                </VBox>
+
+                <!-- Metric 6: Rejected Articles -->
+                <VBox styleClass="kpi-card" spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <Label text="ОТКЛОНЕНО" styleClass="kpi-card-title"/>
+                    <Label fx:id="rejectedCountLabel" text="0" styleClass="kpi-card-value" style="-fx-text-fill: #dc2626;"/>
+                    <Label text="Не прошедшие редакционный совет" styleClass="font-mono-sm"/>
+                </VBox>
+            </GridPane>
+
+            <!-- Charts Section -->
+            <HBox spacing="20">
+                <!-- Pie Chart: Status Breakdown -->
+                <VBox styleClass="article-card" HBox.hgrow="ALWAYS" prefHeight="380">
+                    <PieChart fx:id="statusPieChart" legendSide="BOTTOM" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <!-- Bar Chart: Activity Comparison -->
+                <VBox styleClass="article-card" HBox.hgrow="ALWAYS" prefHeight="380">
+                    <BarChart fx:id="activityBarChart" title="Сводный баланс показателей редакции" legendVisible="false" VBox.vgrow="ALWAYS">
+                        <xAxis>
+                            <CategoryAxis label="Показатель"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Количество"/>
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+
+</VBox>

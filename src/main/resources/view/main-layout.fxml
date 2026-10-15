@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="presentation.controller.MainController"
+            prefWidth="1360" prefHeight="850" minWidth="1024" minHeight="700"
+            stylesheets="@../css/typography.css, @../css/editorial-theme.css">
+
+    <!-- TOP SECTION -->
+    <top>
+        <VBox>
+            <!-- Window Title Bar (Tier 0) -->
+            <HBox styleClass="title-bar" spacing="10" alignment="CENTER_LEFT">
+                <Label text="📖" style="-fx-font-size: 14px;"/>
+                <Label text="Редакция Вестник" styleClass="title-bar-text"/>
+                <Label text="|" styleClass="title-bar-version"/>
+                <Label text="v2.4.0-desktop" styleClass="title-bar-version"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Контрольная работа № 2 • JavaFX direct JDBC" styleClass="title-bar-version"/>
+            </HBox>
+
+            <!-- Header Ribbon (Tier 1) -->
+            <HBox styleClass="header-ribbon" alignment="CENTER_LEFT" spacing="20">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📰" style="-fx-font-size: 16px;"/>
+                    <Label text="Выпуск #12 (Ноябрь 2024)" styleClass="font-title-sm"/>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Navigation Tabs -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Button fx:id="tabCatalog" text="Каталог" styleClass="header-nav-tab, header-nav-tab-active"/>
+                    <Button fx:id="tabTable" text="Таблица архива" styleClass="header-nav-tab"/>
+                    <Button fx:id="tabStats" text="Аналитика и KPI" styleClass="header-nav-tab"/>
+                    <Button fx:id="tabUsers" text="Авторы и персонал" styleClass="header-nav-tab"/>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Header Actions -->
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button fx:id="quickExportBtn" text="⬇ Экспорт в Excel" styleClass="btn-secondary"/>
+                    <HBox alignment="CENTER" spacing="6" style="-fx-padding: 4 8; -fx-background-color: #f2f3ff; -fx-background-radius: 16;">
+                        <Label text="👤" style="-fx-font-size: 14px;"/>
+                        <Label text="А. С. Державин" styleClass="font-label-md"/>
+                    </HBox>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- LEFT SECTION (Sidebar Rail) -->
+    <left>
+        <VBox styleClass="sidebar-rail" spacing="12">
+            <padding>
+                <Insets top="16" right="12" bottom="16" left="12"/>
+            </padding>
+
+            <!-- Quick Action Button -->
+            <Button fx:id="createNewArticleBtn" text="+ Новая статья" styleClass="btn-primary" maxWidth="Infinity" alignment="CENTER">
+                <graphic>
+                    <Label text="✎" style="-fx-text-fill: white; -fx-font-size: 13px;"/>
+                </graphic>
+            </Button>
+
+            <!-- Section 1: Reading Room -->
+            <VBox spacing="4">
+                <Label text="ЧИТАЛЬНЫЙ ЗАЛ" styleClass="sidebar-section-title"/>
+                <Button fx:id="navCatalogBtn" text="Каталог статей" styleClass="sidebar-nav-btn, sidebar-nav-btn-active" maxWidth="Infinity"/>
+                <Button fx:id="navTableBtn" text="Таблица архива" styleClass="sidebar-nav-btn" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- Section 2: Management -->
+            <VBox spacing="4">
+                <Label text="РЕДАКЦИЯ И УПРАВЛЕНИЕ" styleClass="sidebar-section-title"/>
+                <Button fx:id="navStatsBtn" text="Аналитика и KPI" styleClass="sidebar-nav-btn" maxWidth="Infinity"/>
+                <Button fx:id="navUsersBtn" text="Авторы и персонал" styleClass="sidebar-nav-btn" maxWidth="Infinity"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- User Workspace Profile Card -->
+            <VBox styleClass="sidebar-profile-card" spacing="6">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="АД" style="-fx-background-color: #1e3a8a; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6; -fx-background-radius: 16; -fx-min-width: 32; -fx-alignment: center;"/>
+                    <VBox spacing="2">
+                        <Label text="А. С. Державин" styleClass="font-title-sm"/>
+                        <Label text="Главный редактор" styleClass="font-mono-sm"/>
+                    </VBox>
+                </HBox>
+                <Label text="Рабочее место редактора" styleClass="font-body-sm"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- CENTER SECTION (Dynamic Content View) -->
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #faf8ff;">
+            <!-- Child views (catalog-view, table-view, reader-view, statistics-view, users-view) are loaded dynamically here -->
+        </StackPane>
+    </center>
+
+    <!-- BOTTOM SECTION (Status Bar) -->
+    <bottom>
+        <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="20">
+            <Label fx:id="statusDbLabel" text="● Подключено: PostgreSQL direct JDBC" styleClass="font-mono-sm"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="statusStatsLabel" text="Статей в системе: 0" styleClass="font-mono-sm"/>
+            <Label text="F5 - Обновить | Ctrl+N - Создать | Ctrl+E - Экспорт" styleClass="font-mono-sm"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="presentation.controller.UsersController"
+      spacing="16" VBox.vgrow="ALWAYS" style="-fx-background-color: #faf8ff;">
+    <padding>
+        <Insets top="16" right="20" bottom="16" left="20"/>
+    </padding>
+
+    <!-- Top Command Strip -->
+    <VBox styleClass="article-card" spacing="12">
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_LEFT" spacing="6" HBox.hgrow="ALWAYS" maxWidth="400"
+                  style="-fx-background-color: #f2f3ff; -fx-padding: 4 8; -fx-background-radius: 4; -fx-border-color: #e2e8f0; -fx-border-radius: 4;">
+                <Label text="🔍" style="-fx-font-size: 12px;"/>
+                <TextField fx:id="searchField" promptText="Поиск авторов по имени или email..."
+                           style="-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 2;" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <Button fx:id="addUserBtn" text="+ Добавить автора" styleClass="btn-primary"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="backBtn" text="← В каталог" styleClass="btn-secondary"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label fx:id="countLabel" text="Всего пользователей: 0" styleClass="font-mono-sm"/>
+        </HBox>
+    </VBox>
+
+    <!-- TableView -->
+    <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="100"/>
+            <TableColumn fx:id="usernameColumn" text="Имя пользователя (Автор)" prefWidth="300"/>
+            <TableColumn fx:id="emailColumn" text="Электронная почта" prefWidth="320"/>
+            <TableColumn fx:id="roleColumn" text="Роль в системе" prefWidth="180"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+</VBox>
