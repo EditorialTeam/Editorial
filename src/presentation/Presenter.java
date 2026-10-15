@@ -46,6 +46,9 @@ public class Presenter {
                 view.showMessage(successMessage);
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
+            if (view == null) {
+                throw e;
+            }
             if (view != null) {
                 view.showError(e.getMessage());
             }
@@ -56,6 +59,9 @@ public class Presenter {
         try {
             return action.get();
         } catch (IllegalArgumentException | IllegalStateException e) {
+            if (view == null) {
+                throw e;
+            }
             if (view != null) {
                 view.showError(e.getMessage());
             }

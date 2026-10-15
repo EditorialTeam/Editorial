@@ -27,6 +27,11 @@
         </HBox>
 
         <HBox alignment="CENTER_LEFT">
+            <Button fx:id="editUserBtn" text="Редактировать" styleClass="btn-secondary"/>
+            <Button fx:id="deleteUserBtn" text="Удалить" styleClass="btn-destructive"/>
+            <Button fx:id="exportUsersBtn" text="Экспорт в Excel" styleClass="btn-secondary"/>
+            <Button fx:id="refreshUsersBtn" text="Обновить" styleClass="btn-secondary"/>
+            <Region HBox.hgrow="ALWAYS"/>
             <Label fx:id="countLabel" text="Всего пользователей: 0" styleClass="font-mono-sm"/>
         </HBox>
     </VBox>

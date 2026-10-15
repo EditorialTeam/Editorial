@@ -17,8 +17,16 @@ import javafx.stage.Stage;
 import presentation.controller.*;
 import presentation.controller.dialog.ArticleDialogController;
 import presentation.validation.InputValidationService;
+import presentation.Presenter;
+import javafx.concurrent.Task;
+import javafx.stage.FileChooser;
 
 import java.io.IOException;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NavigationManager {
     private static NavigationManager instance;
@@ -31,6 +39,15 @@ public class NavigationManager {
     private UserService userService;
     private StatisticsService statisticsService;
     private InputValidationService inputValidationService;
+    private Presenter presenter;
+    private Runnable currentView = this::showCatalog;
+    private final Set<Integer> deletingArticles = new HashSet<>();
+    private boolean exporting;
+    private final ExecutorService executor = Executors.newFixedThreadPool(3, action -> {
+        Thread thread = new Thread(action, "editorial-worker");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private NavigationManager() {}
 
@@ -51,6 +68,73 @@ public class NavigationManager {
         this.userService = userService;
         this.statisticsService = statisticsService;
         this.inputValidationService = inputValidationService;
+        this.presenter = new Presenter(articleService, userService, statisticsService);
+    }
+
+    public Presenter getPresenter() { return presenter; }
+
+    public void execute(Runnable action) { executor.execute(action); }
+
+    public void shutdown() { executor.shutdownNow(); }
+
+    public void refreshCurrentView() { currentView.run(); }
+
+    public void setArticleCount(int count) { mainController.setDataStatus(count); }
+
+    public void setDatabaseError() { mainController.setDatabaseError(); }
+
+    public void deleteArticle(Article article, Runnable onSuccess) {
+        if (deletingArticles.contains(article.getId())) return;
+        if (!DialogHelper.showConfirmation(primaryStage, "Удаление статьи",
+                "Удалить «" + article.getTitle() + "»?", "Это действие нельзя отменить.")) return;
+        deletingArticles.add(article.getId());
+        Task<Void> task = new Task<>() {
+            protected Void call() {
+                presenter.onDeleteArticle(article.getId());
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> {
+            deletingArticles.remove(article.getId());
+            onSuccess.run();
+        });
+        task.setOnFailed(event -> {
+            deletingArticles.remove(article.getId());
+            DialogHelper.showError(primaryStage, "Ошибка удаления", task.getException().getMessage());
+        });
+        execute(task);
+    }
+
+    public void exportArticles() { export(false); }
+
+    public void exportUsers() { export(true); }
+
+    private void export(boolean users) {
+        if (exporting) return;
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Сохранить Excel");
+        chooser.setInitialFileName(users ? "users.xlsx" : "articles.xlsx");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel", "*.xlsx"));
+        File file = chooser.showSaveDialog(primaryStage);
+        if (file == null) return;
+        String path = file.getAbsolutePath().endsWith(".xlsx") ? file.getAbsolutePath() : file.getAbsolutePath() + ".xlsx";
+        exporting = true;
+        Task<Void> task = new Task<>() {
+            protected Void call() {
+                if (users) presenter.onExportUsers(path);
+                else presenter.onExportArticles(path);
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> {
+            exporting = false;
+            DialogHelper.showInfo(primaryStage, "Экспорт завершён", "Файл сохранён: " + path);
+        });
+        task.setOnFailed(event -> {
+            exporting = false;
+            DialogHelper.showError(primaryStage, "Ошибка экспорта", task.getException().getMessage());
+        });
+        execute(task);
     }
 
     public Stage getPrimaryStage() {
@@ -85,6 +169,7 @@ public class NavigationManager {
             CatalogController controller = loader.getController();
             controller.init(this);
             setView(view);
+            currentView = this::showCatalog;
             if (mainController != null) {
                 mainController.setActiveTab("catalog");
             }
@@ -101,6 +186,7 @@ public class NavigationManager {
             ArticleTableController controller = loader.getController();
             controller.init(this);
             setView(view);
+            currentView = this::showTableView;
             if (mainController != null) {
                 mainController.setActiveTab("table");
             }
@@ -117,6 +203,17 @@ public class NavigationManager {
             ReaderController controller = loader.getController();
             controller.init(this, article);
             setView(view);
+            currentView = () -> {
+                Task<Article> task = new Task<>() {
+                    protected Article call() { return presenter.onGetArticleById(article.getId()); }
+                };
+                task.setOnSucceeded(event -> {
+                    if (task.getValue() == null) showCatalog();
+                    else showReader(task.getValue());
+                });
+                task.setOnFailed(event -> DialogHelper.showError(primaryStage, "Ошибка обновления", task.getException().getMessage()));
+                execute(task);
+            };
             if (mainController != null) {
                 mainController.setActiveTab("reader");
             }
@@ -133,6 +230,7 @@ public class NavigationManager {
             StatisticsController controller = loader.getController();
             controller.init(this);
             setView(view);
+            currentView = this::showStatistics;
             if (mainController != null) {
                 mainController.setActiveTab("stats");
             }
@@ -149,6 +247,7 @@ public class NavigationManager {
             UsersController controller = loader.getController();
             controller.init(this);
             setView(view);
+            currentView = this::showUsers;
             if (mainController != null) {
                 mainController.setActiveTab("users");
             }

@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +41,25 @@ class PresenterTest {
     @BeforeEach
     void setUp() {
         presenter = new Presenter(view, articleService, userService, statisticsService);
+    }
+
+    @Test
+    void presenterWithoutViewPropagatesLoadFailureForFxTask() {
+        Presenter fxPresenter = new Presenter(articleService, userService, statisticsService);
+        IllegalStateException failure = new IllegalStateException("Database unavailable");
+        when(articleService.getAll()).thenThrow(failure);
+
+        assertSame(failure, assertThrows(IllegalStateException.class, fxPresenter::onGetArticles));
+    }
+
+    @Test
+    void presenterWithoutViewPropagatesSaveFailureForFxTask() {
+        Presenter fxPresenter = new Presenter(articleService, userService, statisticsService);
+        IllegalArgumentException failure = new IllegalArgumentException("Invalid user");
+        User user = new User(0, "bad", "bad", "hash", User.Role.AUTHOR);
+        doThrow(failure).when(userService).add(user);
+
+        assertSame(failure, assertThrows(IllegalArgumentException.class, () -> fxPresenter.onAddUser(user)));
     }
 
     @Test

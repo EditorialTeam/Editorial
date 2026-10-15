@@ -107,6 +107,7 @@ public class ApplicationFX extends Application {
             primaryStage.setMinWidth(1024);
             primaryStage.setMinHeight(700);
             primaryStage.setScene(scene);
+            mainController.installShortcuts();
             primaryStage.show();
 
         } catch (Exception e) {
@@ -114,6 +115,11 @@ public class ApplicationFX extends Application {
             DialogHelper.showError(primaryStage, "Критическая ошибка запуска",
                     "Не удалось инициализировать графический интерфейс JavaFX: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void stop() {
+        NavigationManager.getInstance().shutdown();
     }
 
     private void loadFonts() {
