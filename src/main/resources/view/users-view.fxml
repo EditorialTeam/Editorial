@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.UsersController" styleClass="workspace" spacing="16">
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Пользователи" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="backBtn" text="В каталог"/>
+    </HBox>
+    <TextField fx:id="searchField" promptText="Поиск по имени или email" maxWidth="480"/>
+    <HBox spacing="8" alignment="CENTER_LEFT">
+        <Button fx:id="addUserBtn" text="Добавить" styleClass="btn-primary"/>
+        <Button fx:id="editUserBtn" text="Изменить"/>
+        <Button fx:id="deleteUserBtn" text="Удалить" styleClass="btn-destructive"/>
+        <Button fx:id="exportUsersBtn" text="Экспорт в Excel"/>
+        <Button fx:id="refreshUsersBtn" text="Обновить"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" styleClass="muted"/>
+    </HBox>
+    <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="usernameColumn" text="Имя" prefWidth="300"/>
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="320"/>
+            <TableColumn fx:id="roleColumn" text="Роль" prefWidth="180"/>
+        </columns>
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+    </TableView>
+</VBox>

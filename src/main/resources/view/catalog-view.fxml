@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.CatalogController" styleClass="workspace" spacing="16">
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Каталог статей" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="gridViewBtn" text="Обновить"/>
+        <Button fx:id="tableViewBtn" text="Таблицей"/>
+    </HBox>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchInput" promptText="Название, текст или ID" HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="authorFilterCombo" prefWidth="190" promptText="Все авторы"/>
+        <ComboBox fx:id="statusFilterCombo" prefWidth="195" promptText="Все статусы"/>
+        <ComboBox fx:id="sortCombo" prefWidth="170"/>
+        <Button fx:id="resetFiltersBtn" text="Сбросить"/>
+    </HBox>
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="articlesGrid" hgap="16" vgap="16" prefWrapLength="1100"/>
+    </ScrollPane>
+    <HBox alignment="CENTER_LEFT">
+        <Label fx:id="countLabel" text="" styleClass="muted"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="archiveStatusLabel" text="" styleClass="muted"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.StatisticsController" styleClass="workspace" spacing="24">
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Статистика" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshBtn" text="Обновить"/>
+        <Button fx:id="backToCatalogBtn" text="В каталог"/>
+    </HBox>
+    <HBox spacing="48" VBox.vgrow="ALWAYS">
+        <GridPane hgap="48" vgap="20" minWidth="380">
+            <Label text="Всего статей" GridPane.rowIndex="0"/>
+            <Label fx:id="totalArticlesLabel" text="—" styleClass="stat-value" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Пользователей" GridPane.rowIndex="1"/>
+            <Label fx:id="totalUsersLabel" text="—" styleClass="stat-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Separator GridPane.rowIndex="2" GridPane.columnSpan="2"/>
+            <Label text="Опубликовано" GridPane.rowIndex="3"/>
+            <Label fx:id="publishedCountLabel" text="—" styleClass="stat-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label fx:id="publishedPercentLabel" text="" styleClass="muted" GridPane.rowIndex="4" GridPane.columnSpan="2"/>
+            <Label text="На редактуре" GridPane.rowIndex="5"/>
+            <Label fx:id="moderatingCountLabel" text="—" styleClass="stat-value" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            <Label text="Ожидает рассмотрения" GridPane.rowIndex="6"/>
+            <Label fx:id="pendingCountLabel" text="—" styleClass="stat-value" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+            <Label text="Отклонено" GridPane.rowIndex="7"/>
+            <Label fx:id="rejectedCountLabel" text="—" styleClass="stat-value" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        </GridPane>
+        <PieChart fx:id="statusPieChart" title="Статусы статей" legendSide="BOTTOM" labelsVisible="false" prefWidth="480" maxWidth="480" prefHeight="360" maxHeight="360" HBox.hgrow="ALWAYS"/>
+    </HBox>
+</VBox>

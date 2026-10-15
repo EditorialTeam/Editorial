@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.ArticleCardController" styleClass="article-card" spacing="12" prefWidth="350" minHeight="240">
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label fx:id="articleIdLabel" styleClass="muted"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statusBadge" styleClass="status-badge"/>
+    </HBox>
+    <Label fx:id="titleLabel" styleClass="section-title" wrapText="true" maxWidth="320"/>
+    <Label fx:id="excerptLabel" wrapText="true" maxWidth="320" VBox.vgrow="ALWAYS"/>
+    <VBox spacing="4">
+        <Label fx:id="authorNameLabel" styleClass="muted"/>
+        <Label fx:id="dateLabel" styleClass="muted"/>
+    </VBox>
+    <HBox spacing="8">
+        <Button fx:id="readBtn" text="Читать"/>
+        <Button fx:id="editBtn" text="Изменить"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="deleteBtn" text="Удалить" styleClass="btn-destructive"/>
+    </HBox>
+</VBox>

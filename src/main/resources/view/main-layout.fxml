@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.MainController" prefWidth="1200" prefHeight="780">
+    <top>
+        <HBox styleClass="app-header" alignment="CENTER_LEFT" spacing="8">
+            <Label text="Редакция" styleClass="app-title"/>
+            <Separator orientation="VERTICAL"/>
+            <Button fx:id="tabCatalog" text="Каталог" styleClass="nav-button"/>
+            <Button fx:id="tabTable" text="Статьи" styleClass="nav-button"/>
+            <Button fx:id="tabUsers" text="Пользователи" styleClass="nav-button"/>
+            <Button fx:id="tabStats" text="Статистика" styleClass="nav-button"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="createNewArticleBtn" text="Новая статья" styleClass="btn-primary"/>
+        </HBox>
+    </top>
+    <center><StackPane fx:id="contentArea"/></center>
+    <bottom>
+        <HBox styleClass="status-bar" spacing="20" alignment="CENTER_LEFT">
+            <Label fx:id="statusDbLabel" text="Загрузка данных…" styleClass="muted"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="statusStatsLabel" text="" styleClass="muted"/>
+            <Label text="F5 — обновить" styleClass="muted"/>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.dialog.ArticleDialogController" styleClass="dialog-container" prefWidth="640" spacing="0">
+    <HBox styleClass="dialog-header">
+        <Label fx:id="dialogTitleLabel" text="Новая статья" styleClass="section-title"/>
+    </HBox>
+    <VBox spacing="16" styleClass="dialog-body">
+        <Label fx:id="errorLabel" visible="false" managed="false" styleClass="error-message" wrapText="true" maxWidth="Infinity"/>
+        <VBox spacing="6"><Label text="Заголовок"/><TextField fx:id="titleField"/></VBox>
+        <HBox spacing="16">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Автор"/>
+                <ComboBox fx:id="authorComboBox" maxWidth="Infinity" promptText="Выберите автора"/>
+            </VBox>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Статус"/>
+                <ComboBox fx:id="statusComboBox" maxWidth="Infinity"/>
+            </VBox>
+        </HBox>
+        <VBox spacing="6">
+            <Label text="Текст статьи"/>
+            <TextArea fx:id="contentArea" prefRowCount="12" wrapText="true"/>
+        </VBox>
+    </VBox>
+    <HBox styleClass="dialog-footer" spacing="8">
+        <Button fx:id="cancelButton" text="Отмена" onAction="#onCancel"/>
+        <Button fx:id="saveButton" text="Сохранить" styleClass="btn-primary" onAction="#onSave"/>
+    </HBox>
+</VBox>

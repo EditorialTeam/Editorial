@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.controller.ReaderController" spacing="16" styleClass="workspace">
+    <HBox alignment="CENTER_LEFT" spacing="8">
+        <Button fx:id="backBtn" text="В каталог"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="fontDecBtn" text="А−"/>
+        <Label fx:id="fontIndicator"/>
+        <Button fx:id="fontIncBtn" text="А+"/>
+        <Button fx:id="editBtn" text="Редактировать"/>
+    </HBox>
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <VBox alignment="TOP_CENTER">
+            <VBox styleClass="reader-canvas" spacing="20" maxWidth="860">
+                <HBox spacing="16" alignment="CENTER_LEFT">
+                    <Label fx:id="articleIdLabel" styleClass="muted"/>
+                    <Label fx:id="statusPill" styleClass="status-badge"/>
+                </HBox>
+                <Label fx:id="titleLabel" styleClass="page-title" wrapText="true" maxWidth="780"/>
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label fx:id="authorName" styleClass="muted"/>
+                    <Label fx:id="dateLabel" styleClass="muted"/>
+                </HBox>
+                <Separator/>
+                <Label fx:id="bodyText" wrapText="true" maxWidth="780" styleClass="article-body"/>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</VBox>
